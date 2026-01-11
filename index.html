@@ -10,65 +10,60 @@
     <link href="https://fonts.googleapis.com/css2?family=Ruslan+Display&display=swap" rel="stylesheet">
     
     <style>
-        :root { --gold: #D4AF37; --bg: #ffffff; --dark: #1a1a1a; --gray: #8e8e93; --red: #e74c3c; }
+        :root { --gold: #D4AF37; --bg: #ffffff; --dark: #1a1a1a; --gray: #8e8e93; --red: #e74c3c; --light-gold: rgba(212, 175, 55, 0.1); }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body { margin: 0; background: var(--bg); font-family: -apple-system, sans-serif; color: var(--dark); overflow-x: hidden; }
         
+        /* ХЕДЕР */
         .header { background: #fff; padding: 15px; text-align: center; border-bottom: 1px solid var(--gold); position: sticky; top: 0; z-index: 100; }
         .old-russian { font-family: 'Ruslan Display', cursive; color: var(--gold); font-size: 24px; margin: 0; text-transform: uppercase; letter-spacing: 2px; }
         
         .container { padding: 15px; padding-bottom: 110px; }
 
-        /* Категории */
-        .categories-nav { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 15px; scrollbar-width: none; }
-        .categories-nav::-webkit-scrollbar { display: none; }
-        .cat-btn { padding: 8px 16px; border-radius: 20px; border: 1px solid var(--gold); background: #fff; color: var(--gold); font-size: 11px; white-space: nowrap; font-weight: bold; }
-        .cat-btn.active { background: var(--gold); color: #fff; }
+        /* КАТЕГОРИИ */
+        .cat-row { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
+        .cat-tab { padding: 10px 20px; border-radius: 25px; border: 1.5px solid var(--gold); background: #fff; color: var(--gold); font-size: 12px; font-weight: bold; white-space: nowrap; }
+        .cat-tab.active { background: var(--gold); color: #fff; }
 
-        /* Сетка товаров */
-        .products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .card { background: #fff; border-radius: 15px; overflow: hidden; border: 1px solid #eee; position: relative; display: flex; flex-direction: column; }
+        /* СЕТКА ТОВАРОВ */
+        .products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .card { background: #fff; border-radius: 20px; overflow: hidden; border: 1px solid #eee; position: relative; display: flex; flex-direction: column; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
         
-        /* Слайдер */
-        .slider-wrapper { position: relative; width: 100%; aspect-ratio: 3/4; overflow: hidden; background: #f9f9f9; }
+        /* СЛАЙДЕР */
+        .slider-wrapper { position: relative; width: 100%; aspect-ratio: 3/4; overflow: hidden; }
         .slider-inner { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; height: 100%; }
-        .slider-inner::-webkit-scrollbar { display: none; }
         .slider-inner img { width: 100%; height: 100%; object-fit: cover; scroll-snap-align: start; flex-shrink: 0; }
+
+        /* ПРОЗРАЧНОЕ СЕРДЦЕ */
+        .fav-heart { position: absolute; top: 10px; right: 10px; z-index: 10; background: rgba(255,255,255,0.25); backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.4); border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+        .fav-heart svg { width: 18px; height: 18px; fill: none; stroke: white; stroke-width: 2.5px; }
+        .fav-heart.active svg { fill: var(--red); stroke: var(--red); }
+
+        .card-info { padding: 12px; text-align: center; }
+        .card-title { font-size: 13px; font-weight: 600; margin-bottom: 5px; height: 32px; overflow: hidden; }
+        .card-price { color: var(--gold); font-weight: 800; font-size: 16px; margin-bottom: 10px; }
         
-        .slider-dots { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 4px; pointer-events: none; }
-        .dot { width: 5px; height: 5px; background: rgba(255,255,255,0.5); border-radius: 50%; transition: 0.3s; }
-        .dot.active { background: #fff; width: 12px; border-radius: 10px; }
+        /* РАЗМЕРЫ */
+        .size-btns { display: flex; justify-content: center; gap: 6px; margin-bottom: 12px; }
+        .s-btn { flex: 1; padding: 10px 0; border: 1.5px solid #eee; border-radius: 10px; font-size: 13px; font-weight: bold; background: #fff; }
+        .s-btn.active { border-color: var(--gold); background: var(--light-gold); color: var(--gold); }
 
-        .fav-abs { position: absolute; top: 8px; right: 8px; z-index: 5; background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 28px; height: 28px; color: #ccc; display: flex; align-items: center; justify-content: center; font-size: 14px; }
-        .fav-abs.active { color: var(--red); }
+        .buy-btn { width: 100%; padding: 12px; background: var(--gold); color: #fff; border: none; border-radius: 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
 
-        .card-info { padding: 8px; text-align: center; flex-grow: 1; }
-        .card-price { color: var(--gold); font-weight: 800; font-size: 14px; margin: 4px 0; }
-        
-        .size-picker-mini { display: flex; justify-content: center; gap: 3px; margin-bottom: 8px; }
-        .size-s-btn { padding: 4px 6px; border: 1px solid #eee; border-radius: 5px; font-size: 9px; background: #f9f9f9; min-width: 25px; }
-        .size-s-btn.active { border-color: var(--gold); background: var(--gold); color: #fff; }
-
-        .add-btn { width: 100%; padding: 8px; background: var(--gold); color: #fff; border: none; border-radius: 10px; font-size: 10px; font-weight: bold; }
-
-        /* Навигация */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #eee; z-index: 1000; }
-        .nav-item { border: none; background: none; color: var(--gray); display: flex; flex-direction: column; align-items: center; font-size: 9px; gap: 4px; font-weight: bold; }
+        /* НАВИГАЦИЯ */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; justify-content: space-around; padding: 10px 0 25px 0; border-top: 1px solid #eee; z-index: 1000; }
+        .nav-item { border: none; background: none; color: #b0b0b0; display: flex; flex-direction: column; align-items: center; font-size: 11px; gap: 5px; width: 25%; }
         .nav-item.active { color: var(--gold); }
-        .nav-icon { font-size: 20px; }
+        .nav-item svg { width: 24px; height: 24px; fill: currentColor; }
 
-        /* Модалка */
+        /* МОДАЛКА */
         .modal { position: fixed; inset: 0; background: #fff; z-index: 2000; overflow-y: auto; padding-bottom: 40px; }
-        .modal-close { position: fixed; top: 15px; left: 15px; width: 35px; height: 35px; border-radius: 50%; background: #fff; border: 1px solid #eee; z-index: 2100; display: flex; align-items: center; justify-content: center; }
+        .close-m { position: fixed; top: 15px; left: 15px; width: 40px; height: 40px; border-radius: 50%; background: #fff; border: 1px solid #eee; z-index: 2100; display: flex; align-items: center; justify-content: center; font-size: 20px; }
 
-        /* Карта и ввод */
-        #map { width: 100%; height: 220px; border-radius: 12px; margin-top: 10px; border: 1px solid var(--gold); }
-        .input-group { margin-bottom: 15px; text-align: left; }
-        .input-group label { display: block; font-size: 10px; color: var(--gold); font-weight: bold; margin-bottom: 5px; }
-        .input-field { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #ddd; font-size: 14px; }
-        .error-msg { color: var(--red); font-size: 10px; margin-top: 5px; font-weight: bold; }
-        .btn-main { width: 100%; padding: 16px; background: var(--gold); color: #fff; border: none; border-radius: 15px; font-weight: bold; margin-top: 15px; }
-        .btn-main:disabled { background: #eee; color: #aaa; }
+        /* КАРТА */
+        #map { width: 100%; height: 200px; border-radius: 15px; margin-top: 10px; border: 1.5px solid var(--gold); }
+        .input-c { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #eee; font-size: 15px; background: #f9f9f9; }
+        .order-btn { width: 100%; padding: 18px; background: var(--gold); color: #fff; border: none; border-radius: 18px; font-weight: 800; font-size: 16px; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -78,120 +73,117 @@
 
     <div class="container">
         <div v-if="activeTab === 'catalog'">
-            <div class="categories-nav">
-                <button v-for="cat in categories" @click="currentCategory = cat; vibrate()" :class="['cat-btn', currentCategory === cat ? 'active' : '']">{{cat.toUpperCase()}}</button>
+            <div class="cat-row">
+                <button v-for="c in categories" @click="currentCat = c; vibrate()" :class="['cat-tab', currentCat === c ? 'active' : '']">{{c.toUpperCase()}}</button>
             </div>
-            
             <div class="products-grid">
                 <div v-for="p in filteredProducts" :key="p.id" class="card">
-                    <button class="fav-abs" @click.stop="toggleFav(p)" :class="{active: isFav(p)}">❤</button>
-                    
-                    <div class="slider-wrapper">
-                        <div class="slider-inner" @scroll="e => handleSliderScroll(e, p)">
-                            <img v-for="img in p.images" :src="img" @click="openProduct(p)">
-                        </div>
-                        <div class="slider-dots">
-                            <div v-for="(img, idx) in p.images" :class="['dot', p.activeIdx === idx ? 'active' : '']"></div>
+                    <button class="fav-heart" @click.stop="toggleFav(p)" :class="{active: isFav(p)}">
+                        <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    </button>
+                    <div class="slider-wrapper" @click="openP(p)">
+                        <div class="slider-inner" @scroll="e => handleScroll(e, p)">
+                            <img v-for="img in p.images" :src="img">
                         </div>
                     </div>
-
                     <div class="card-info">
-                        <div style="font-size: 11px; font-weight: bold; height: 28px; overflow: hidden;">{{p.name}}</div>
+                        <div class="card-title">{{p.name}}</div>
                         <div class="card-price">{{p.price}} ₽</div>
-                        <div class="size-picker-mini">
-                            <button v-for="s in p.sizes" @click="p.selectedSize = s; vibrate()" :class="['size-s-btn', p.selectedSize === s ? 'active' : '']">{{s}}</button>
+                        <div class="size-btns">
+                            <button v-for="s in p.sizes" @click="p.selS = s; vibrate()" :class="['s-btn', p.selS === s ? 'active' : '']">{{s}}</button>
                         </div>
-                        <button class="add-btn" @click="addToCart(p)">ДОБАВИТЬ</button>
+                        <button class="buy-btn" @click="addToCart(p)">В корзину</button>
                     </div>
                 </div>
             </div>
         </div>
 
         <div v-if="activeTab === 'favs'">
-            <h2 class="old-russian" style="font-size: 18px; margin-bottom: 15px;">Избранное</h2>
-            <div v-if="favItems.length === 0" style="text-align: center; margin-top: 50px; color: var(--gray);">Ваше сердце пока свободно...</div>
+            <h2 class="old-russian" style="font-size: 18px; margin-bottom: 20px;">Избранное</h2>
+            <div v-if="favItems.length === 0" style="text-align: center; padding: 50px 0; color: var(--gray);">Список пуст</div>
             <div class="products-grid">
                 <div v-for="p in favItems" :key="p.id" class="card">
-                    <button class="fav-abs active" @click.stop="toggleFav(p)">❤</button>
-                    <img :src="p.images[0]" @click="openProduct(p)">
+                    <button class="fav-heart active" @click.stop="toggleFav(p)">
+                        <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    </button>
+                    <img :src="p.images[0]" style="width:100%; aspect-ratio:3/4; object-fit:cover;" @click="openP(p)">
                     <div class="card-info">
                         <div class="card-price">{{p.price}} ₽</div>
-                        <button class="add-btn" @click="addToCart(p)">ДОБАВИТЬ</button>
+                        <button class="buy-btn" @click="addToCart(p)">В корзину</button>
                     </div>
                 </div>
             </div>
         </div>
 
         <div v-if="activeTab === 'cart'">
-            <h2 class="old-russian" style="font-size: 18px; margin-bottom: 15px;">Оформление</h2>
-            <div v-if="cart.length === 0" style="text-align: center; margin-top: 50px; color: var(--gray);">Корзина пуста</div>
+            <h2 class="old-russian" style="font-size: 18px; margin-bottom: 20px;">Оформление</h2>
+            <div v-if="cart.length === 0" style="text-align: center; padding: 50px 0; color: var(--gray);">В корзине ничего нет</div>
             <div v-else>
-                <div v-for="item in cart" :key="item.cartId" style="display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid #eee; align-items: center;">
-                    <img :src="item.image" style="width: 45px; height: 60px; object-fit: cover; border-radius: 8px;">
-                    <div style="flex: 1; font-size: 12px;"><b>{{item.name}}</b> ({{item.size}})<br><span style="color:var(--gold);">{{item.price}} ₽</span></div>
-                    <button @click="removeFromCart(item.cartId)" style="border:none; background:none; color:#ccc; font-size:18px;">✕</button>
+                <div v-for="item in cart" :key="item.cartId" style="display: flex; gap: 15px; padding: 15px 0; border-bottom: 1px solid #eee;">
+                    <img :src="item.img" style="width: 60px; height: 80px; object-fit: cover; border-radius: 12px;">
+                    <div style="flex: 1;">
+                        <div style="font-size: 14px; font-weight: 600;">{{item.name}}</div>
+                        <div style="font-size: 12px; color: var(--gray);">Размер: {{item.size}}</div>
+                        <div style="color: var(--gold); font-weight: 700;">{{item.price}} ₽</div>
+                    </div>
+                    <button @click="removeC(item.cartId)" style="border:none; background:none; font-size:20px;">✕</button>
                 </div>
 
-                <div style="margin-top: 20px;">
-                    <div class="input-group"><label>ИМЯ И ФАМИЛИЯ</label><input class="input-field" v-model="form.name" placeholder="Светлана Иванова"></div>
-                    <div class="input-group">
-                        <label>ТЕЛЕФОН</label>
-                        <input class="input-field" v-model="form.phone" type="tel" placeholder="+7...">
-                        <div v-if="phoneErrorMsg" class="error-msg">{{phoneErrorMsg}}</div>
+                <div style="margin-top: 25px;">
+                    <input class="input-c" v-model="form.name" placeholder="Имя и Фамилия" style="margin-bottom:10px;">
+                    <input class="input-c" v-model="form.phone" placeholder="Телефон" type="tel" style="margin-bottom:15px;">
+                    <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                        <button v-for="d in ['5post', 'СДЭК', 'Почта']" @click="deliv = d; vibrate(); initMap()" :class="['cat-tab', deliv === d ? 'active' : '']" style="flex:1;">{{d}}</button>
                     </div>
-
-                    <label style="font-size: 10px; font-weight: bold; color: var(--gold);">СПОСОБ ДОСТАВКИ</label>
-                    <div style="display: flex; gap: 5px; margin: 10px 0;">
-                        <button v-for="d in ['5post', 'СДЭК', 'Почта России']" @click="deliveryMode = d; vibrate(); initMap()" :class="['cat-btn', deliveryMode === d ? 'active' : '']" style="flex:1;">{{d}}</button>
-                    </div>
-                    <div v-show="deliveryMode">
-                        <p style="font-size: 11px;">📍 <b>Адрес:</b> {{address || 'Кликните на карту'}}</p>
+                    <div v-show="deliv">
+                        <div style="font-size: 12px; margin-bottom: 5px;">📍 {{address || 'Выберите адрес на карте'}}</div>
                         <div id="map"></div>
                     </div>
                 </div>
-                <button class="btn-main" @click="sendOrder" :disabled="!isFormValid">ЗАКАЗАТЬ: {{totalSum}} ₽</button>
+                <button class="order-btn" @click="send" :disabled="!isValid">ЗАКАЗАТЬ: {{total}} ₽</button>
             </div>
         </div>
 
         <div v-if="activeTab === 'profile'">
-            <div style="text-align: center; padding: 30px 0;">
-                <img :src="user.photo || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover;">
-                <h2 style="margin: 15px 0 5px;">{{user.first_name}} {{user.last_name}}</h2>
-                <button class="cat-btn" @click="tg.openTelegramLink('https://t.me/putunkeeva')">НАПИСАТЬ В ПОДДЕРЖКУ</button>
-            </div>
-            <h3 class="old-russian" style="font-size: 16px; margin-top: 20px;">История заказов</h3>
-            <div v-for="order in orderHistory" :key="order.id" style="background:#f9f9f9; padding:12px; border-radius:12px; margin-bottom:8px; font-size:12px; border:1px solid #eee;">
-                <b>Заказ #{{order.id}}</b><br><small>{{order.date}} — {{order.total}} ₽</small>
+            <div style="text-align: center; padding: 40px 0;">
+                <img :src="user.photo || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width: 90px; height: 90px; border-radius: 50%; border: 2px solid var(--gold);">
+                <h2>{{user.first_name}}</h2>
+                <button class="cat-tab" @click="tg.openTelegramLink('https://t.me/putunkeeva')">Служба заботы</button>
             </div>
         </div>
     </div>
 
-    <div v-if="selectedProduct" class="modal">
-        <button class="modal-close" @click="selectedProduct = null">✕</button>
+    <div v-if="selP" class="modal">
+        <button class="close-m" @click="selP = null">✕</button>
         <div class="slider-wrapper" style="aspect-ratio: 1/1.3;">
-             <div class="slider-inner" @scroll="e => handleSliderScroll(e, selectedProduct)">
-                <img v-for="img in selectedProduct.images" :src="img">
-            </div>
-            <div class="slider-dots">
-                <div v-for="(img, idx) in selectedProduct.images" :class="['dot', selectedProduct.activeIdx === idx ? 'active' : '']"></div>
+            <div class="slider-inner" @scroll="e => handleScroll(e, selP)">
+                <img v-for="img in selP.images" :src="img">
             </div>
         </div>
         <div style="padding: 20px;">
-            <h2 class="old-russian" style="margin:0;">{{selectedProduct.name}}</h2>
-            <div class="card-price" style="font-size: 24px;">{{selectedProduct.price}} ₽</div>
-            <p style="font-size: 14px; color: #666; line-height: 1.6; margin: 15px 0;">{{selectedProduct.desc}}</p>
-            <div class="size-picker-mini" style="justify-content: flex-start; gap: 10px; margin-bottom: 25px;">
-                <button v-for="s in selectedProduct.sizes" @click="selectedProduct.selectedSize = s; vibrate()" :class="['size-s-btn', selectedProduct.selectedSize === s ? 'active' : '']" style="padding: 10px 20px; font-size: 14px;">{{s}}</button>
+            <h2 class="old-russian">{{selP.name}}</h2>
+            <div style="font-size: 24px; color: var(--gold); font-weight: 800; margin: 10px 0;">{{selP.price}} ₽</div>
+            <p style="font-size: 14px; color: #666; line-height: 1.5;">{{selP.desc}}</p>
+            <div class="size-btns" style="margin: 20px 0;">
+                <button v-for="s in selP.sizes" @click="selP.selS = s; vibrate()" :class="['s-btn', selP.selS === s ? 'active' : '']" style="padding: 15px;">{{s}}</button>
             </div>
-            <button class="btn-main" @click="addToCart(selectedProduct)">ДОБАВИТЬ В КОРЗИНУ</button>
+            <button class="order-btn" @click="addToCart(selP)">Добавить в корзину</button>
         </div>
     </div>
 
     <nav class="bottom-nav">
-        <button @click="activeTab = 'catalog'; vibrate()" :class="['nav-item', activeTab === 'catalog' ? 'active' : '']"><span class="nav-icon">○</span>КАТАЛОГ</button>
-        <button @click="activeTab = 'favs'; vibrate()" :class="['nav-item', activeTab === 'favs' ? 'active' : '']"><span class="nav-icon">♡</span>ИЗБРАННОЕ</button>
-        <button @click="activeTab = 'cart'; vibrate()" :class="['nav-item', activeTab === 'cart' ? 'active' : '']"><span class="nav-icon">□</span>КОРЗИНА</button>
-        <button @click="activeTab = 'profile'; vibrate()" :class="['nav-item', activeTab === 'profile' ? 'active' : '']"><span class="nav-icon">△</span>ПРОФИЛЬ</button>
+        <button @click="activeTab = 'catalog'; vibrate()" :class="['nav-item', activeTab === 'catalog' ? 'active' : '']">
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Каталог</span>
+        </button>
+        <button @click="activeTab = 'favs'; vibrate()" :class="['nav-item', activeTab === 'favs' ? 'active' : '']">
+            <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span>Избранное</span>
+        </button>
+        <button @click="activeTab = 'cart'; vibrate()" :class="['nav-item', activeTab === 'cart' ? 'active' : '']">
+            <svg viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg><span>Корзина</span>
+        </button>
+        <button @click="activeTab = 'profile'; vibrate()" :class="['nav-item', activeTab === 'profile' ? 'active' : '']">
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span>Профиль</span>
+        </button>
     </nav>
 </div>
 
@@ -203,91 +195,68 @@
         data() {
             return {
                 activeTab: 'catalog',
-                currentCategory: 'халаты',
+                currentCat: 'халаты',
                 categories: ['халаты', 'сорочки'],
-                selectedProduct: null,
-                deliveryMode: '',
+                selP: null,
+                deliv: '',
                 address: '',
-                map: null,
-                marker: null,
-                user: { first_name: 'Гость', last_name: '', photo: '' },
+                user: { first_name: 'Гость', photo: '' },
                 form: { name: '', phone: '' },
                 products: [
-                    { id: 1, category: 'халаты', name: 'Халат "Белое Облако"', price: 4500, images: ['111white.jpg'], sizes: ['S','M','L'], desc: 'Элегантный шелк для дома.', activeIdx: 0, selectedSize: 'S' },
-                    { id: 2, category: 'халаты', name: 'Халат "Красная Заря"', price: 5200, images: ['111red.jpg'], sizes: ['M','L'], desc: 'Яркий атлас ручной работы.', activeIdx: 0, selectedSize: 'M' },
-                    { id: 3, category: 'халаты', name: 'Халат "Полночь"', price: 4800, images: ['111black.jpg'], sizes: ['S','M','L'], desc: 'Классика черного шелка.', activeIdx: 0, selectedSize: 'S' }
+                    { id: 1, category: 'халаты', name: 'Халат "Белое Облако"', price: 4500, images: ['111white.jpg'], sizes: ['S','M','L'], selS: 'S', aIdx: 0, desc: 'Нежнейший белый шелк.' },
+                    { id: 2, category: 'халаты', name: 'Халат "Красная Заря"', price: 5200, images: ['111red.jpg'], sizes: ['M','L'], selS: 'M', aIdx: 0, desc: 'Яркий атлас для особого настроения.' },
+                    { id: 3, category: 'халаты', name: 'Халат "Полночь"', price: 4800, images: ['111black.jpg'], sizes: ['S','M','L'], selS: 'S', aIdx: 0, desc: 'Благородная классика в черном цвете.' },
+                    { id: 4, category: 'сорочки', name: 'Сорочка "Кружево"', price: 3500, images: ['111white.jpg'], sizes: ['S','M'], selS: 'S', aIdx: 0, desc: 'Элегантная сорочка с кружевными вставками.' }
                 ],
-                cart: JSON.parse(localStorage.getItem('svetlania_cart') || '[]'),
-                favorites: JSON.parse(localStorage.getItem('svetlania_favs') || '[]'),
-                orderHistory: JSON.parse(localStorage.getItem('svetlania_history') || '[]')
+                cart: JSON.parse(localStorage.getItem('sv_cart') || '[]'),
+                favs: JSON.parse(localStorage.getItem('sv_favs') || '[]')
             }
         },
         computed: {
-            filteredProducts() { return this.products.filter(p => p.category === this.currentCategory) },
-            favItems() { return this.products.filter(p => this.favorites.includes(p.id)) },
-            totalSum() { return this.cart.reduce((s, i) => s + i.price, 0) },
-            phoneErrorMsg() {
-                const p = this.form.phone.replace(/\D/g, '');
-                if (!this.form.phone) return null;
-                if (/[a-zA-Zа-яА-Я]/.test(this.form.phone)) return "Только цифры!";
-                if (p.length < 11) return "Слишком короткий номер";
-                if (['000000', '111111', '999999', '123456', '888888'].some(c => p.includes(c))) return "Некорректный номер";
-                return null;
-            },
-            isFormValid() {
-                return this.form.name.length > 2 && !this.phoneErrorMsg && this.form.phone.length > 10 && this.address && this.cart.length > 0;
-            }
+            filteredProducts() { return this.products.filter(p => p.category === this.currentCat) },
+            favItems() { return this.products.filter(p => this.favs.includes(p.id)) },
+            total() { return this.cart.reduce((s, i) => s + i.price, 0) },
+            isValid() { return this.form.name.length > 2 && this.form.phone.length > 10 && this.address && this.cart.length > 0; }
         },
         methods: {
             vibrate() { tg.HapticFeedback.impactOccurred('medium'); },
-            handleSliderScroll(e, p) { p.activeIdx = Math.round(e.target.scrollLeft / e.target.offsetWidth); },
+            handleScroll(e, p) { p.aIdx = Math.round(e.target.scrollLeft / e.target.offsetWidth); },
             toggleFav(p) {
                 this.vibrate();
-                const idx = this.favorites.indexOf(p.id);
-                idx > -1 ? this.favorites.splice(idx, 1) : this.favorites.push(p.id);
-                localStorage.setItem('svetlania_favs', JSON.stringify(this.favorites));
+                const i = this.favs.indexOf(p.id);
+                i > -1 ? this.favs.splice(i, 1) : this.favs.push(p.id);
+                localStorage.setItem('sv_favs', JSON.stringify(this.favs));
             },
-            isFav(p) { return this.favorites.includes(p.id); },
-            openProduct(p) { this.vibrate(); this.selectedProduct = p; },
+            isFav(p) { return this.favs.includes(p.id); },
+            openP(p) { this.vibrate(); this.selP = p; },
             addToCart(p) {
                 this.vibrate();
-                this.cart.push({ cartId: Date.now(), name: p.name, price: p.price, size: p.selectedSize, image: p.images[0] });
-                localStorage.setItem('svetlania_cart', JSON.stringify(this.cart));
-                this.selectedProduct = null;
+                this.cart.push({ cartId: Date.now(), name: p.name, price: p.price, size: p.selS, img: p.images[0] });
+                localStorage.setItem('sv_cart', JSON.stringify(this.cart));
+                this.selP = null;
             },
-            removeFromCart(id) { 
+            removeC(id) { 
                 this.cart = this.cart.filter(i => i.cartId !== id);
-                localStorage.setItem('svetlania_cart', JSON.stringify(this.cart));
+                localStorage.setItem('sv_cart', JSON.stringify(this.cart));
             },
             initMap() {
                 setTimeout(() => {
-                    if (this.map) { this.map.remove(); this.map = null; }
-                    this.map = DG.map('map', { center: [55.75, 37.61], zoom: 11, zoomControl: false });
-                    this.map.on('click', (e) => {
+                    const map = DG.map('map', { center: [55.75, 37.61], zoom: 11, zoomControl: false });
+                    map.on('click', (e) => {
                         this.vibrate();
-                        const {lat, lng} = e.latlng;
-                        if (this.marker) this.marker.setLatLng([lat, lng]);
-                        else this.marker = DG.marker([lat, lng]).addTo(this.map);
-                        
-                        fetch(`https://catalog.api.2gis.com/3.0/items/geocode?lat=${lat}&lon=${lng}&fields=items.address&key=cab82c94-e619-42eb-9814-3361712feaf0`)
+                        fetch(`https://catalog.api.2gis.com/3.0/items/geocode?lat=${e.latlng.lat}&lon=${e.latlng.lng}&fields=items.address&key=cab82c94-e619-42eb-9814-3361712feaf0`)
                         .then(r => r.json()).then(d => {
-                            if (d.result?.items?.length > 0) {
-                                this.address = d.result.items[0].address_name || d.result.items[0].full_name;
-                            }
+                            if (d.result?.items?.length > 0) this.address = d.result.items[0].address_name;
                         });
                     });
                 }, 100);
             },
-            sendOrder() {
+            send() {
                 this.vibrate();
-                const orderId = `${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${Math.floor(10000 + Math.random() * 90000)}`;
-                const orderData = { id: orderId, user: this.form, cart: this.cart, total: this.totalSum, delivery: this.deliveryMode, address: this.address };
-
-                this.orderHistory.unshift({ id: orderId, date: new Date().toLocaleDateString(), total: this.totalSum });
-                localStorage.setItem('svetlania_history', JSON.stringify(this.orderHistory));
-
-                tg.sendData(JSON.stringify(orderData));
-                localStorage.removeItem('svetlania_cart'); // Удаляем корзину ТОЛЬКО после заказа
+                const orderNum = Math.floor(10000 + Math.random() * 90000);
+                const orderId = `${new Date().toLocaleDateString().replace(/\./g, '')}-${orderNum}`;
+                tg.sendData(JSON.stringify({ id: orderId, user: this.form, cart: this.cart, total: this.total, address: this.address }));
+                localStorage.removeItem('sv_cart');
                 tg.close();
             }
         },
@@ -295,8 +264,8 @@
             tg.ready(); tg.expand();
             if (tg.initDataUnsafe?.user) {
                 const u = tg.initDataUnsafe.user;
-                this.user = { first_name: u.first_name || '', last_name: u.last_name || '', photo: u.photo_url || '' };
-                this.form.name = (this.user.first_name + ' ' + this.user.last_name).trim();
+                this.user = { first_name: u.first_name, photo: u.photo_url };
+                this.form.name = (u.first_name + ' ' + (u.last_name || '')).trim();
             }
         }
     }).mount('#app');
