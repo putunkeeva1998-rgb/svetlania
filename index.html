@@ -7,7 +7,6 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://maps.api.2gis.ru/2.0/loader.js?pkg=full"></script>
-    
     <link href="https://fonts.googleapis.com/css2?family=Ruslan+Display&display=swap" rel="stylesheet">
     
     <style>
@@ -16,37 +15,45 @@
         body { margin: 0; background: var(--bg); font-family: -apple-system, sans-serif; color: var(--dark); overflow-x: hidden; }
         
         .header { background: #fff; padding: 15px; text-align: center; border-bottom: 2px solid var(--gold); position: sticky; top: 0; z-index: 100; }
-        .old-russian { font-family: 'Ruslan Display', cursive; color: var(--gold); font-size: 28px; margin: 0; text-transform: uppercase; letter-spacing: 2px; }
+        .old-russian { font-family: 'Ruslan Display', cursive; color: var(--gold); font-size: 26px; margin: 0; text-transform: uppercase; letter-spacing: 2px; }
         
         .container { padding: 15px; padding-bottom: 120px; }
-        
         .products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        
+        /* Карточка товара */
         .card { background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: relative; border: 1px solid rgba(212, 175, 55, 0.1); }
         .card img { width: 100%; aspect-ratio: 3/4; object-fit: cover; display: block; }
-        .card-info { padding: 12px; text-align: center; }
-        .card-price { color: var(--gold); font-weight: 800; }
+        .card-info { padding: 10px; text-align: center; }
+        .card-price { color: var(--gold); font-weight: 800; font-size: 14px; }
+        .card-sizes { font-size: 10px; color: #888; margin-top: 4px; font-weight: bold; }
 
-        .fav-btn { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 18px; color: #ccc; }
+        .fav-btn { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #ccc; z-index: 5; }
         .fav-btn.active { color: #e74c3c; }
 
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 12px; color: var(--gold); font-weight: bold; margin-bottom: 5px; }
-        .input-field { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #ddd; font-size: 14px; }
-
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #eee; z-index: 1000; }
-        .nav-item { border: none; background: none; color: #bbb; display: flex; flex-direction: column; align-items: center; font-size: 9px; font-weight: bold; }
+        /* Навигация */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; justify-content: space-around; padding: 10px; border-top: 1px solid #eee; z-index: 1000; }
+        .nav-item { border: none; background: none; color: #bbb; display: flex; flex-direction: column; align-items: center; font-size: 9px; font-weight: bold; gap: 4px; }
         .nav-item.active { color: var(--gold); }
+        .nav-icon { font-size: 20px; }
 
-        .cat-btn { padding: 10px 15px; border-radius: 20px; border: 1px solid var(--gold); background: #fff; color: var(--gold); margin-right: 5px; font-size: 12px; }
+        /* Профиль */
+        .profile-card { text-align: center; background: #fff; padding: 30px 20px; border-radius: 20px; border: 1px solid var(--gold); margin-top: 20px; }
+        .user-photo { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--gold); margin-bottom: 15px; object-fit: cover; }
+
+        /* Формы */
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .input-group label { display: block; font-size: 11px; color: var(--gold); font-weight: bold; margin-bottom: 4px; }
+        .input-field { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #ddd; font-size: 14px; }
+        .error-text { color: #e74c3c; font-size: 10px; margin-top: 4px; }
+
+        .cat-btn { padding: 8px 15px; border-radius: 20px; border: 1px solid var(--gold); background: #fff; color: var(--gold); margin-right: 5px; font-size: 12px; }
         .cat-btn.active { background: var(--gold); color: #fff; }
 
-        /* Важно: задаем четкие размеры для карты */
-        #map { width: 100%; height: 250px; border-radius: 15px; margin-top: 10px; border: 1px solid var(--gold); background-color: #f0f0f0; position: relative; }
-
-        .modal { position: fixed; inset: 0; background: #fff; z-index: 2000; overflow-y: auto; padding-bottom: 50px; }
-        .close-btn { position: fixed; top: 20px; left: 20px; background: #fff; border-radius: 50%; width: 40px; height: 40px; border: 1px solid #eee; z-index: 2100; font-size: 20px; color: var(--gold); }
+        #map { width: 100%; height: 200px; border-radius: 15px; margin-top: 10px; border: 1px solid var(--gold); }
         .btn-main { width: 100%; padding: 16px; background: var(--gold); color: #fff; border: none; border-radius: 15px; font-weight: bold; margin-top: 15px; }
         .btn-main:disabled { background: #ccc; }
+        
+        .modal { position: fixed; inset: 0; background: #fff; z-index: 2000; overflow-y: auto; padding-bottom: 50px; }
     </style>
 </head>
 <body>
@@ -56,7 +63,7 @@
 
     <div class="container">
         <div v-if="activeTab === 'catalog'">
-            <div style="display: flex; overflow-x: auto; padding-bottom: 15px;">
+            <div style="display: flex; overflow-x: auto; padding-bottom: 15px; scrollbar-width: none;">
                 <button v-for="cat in categories" @click="currentCategory = cat" :class="['cat-btn', currentCategory === cat ? 'active' : '']">{{cat}}</button>
             </div>
             <div class="products-grid">
@@ -64,8 +71,9 @@
                     <button class="fav-btn" @click.stop="toggleFav(p)" :class="{active: isFav(p)}">❤</button>
                     <img :src="p.image">
                     <div class="card-info">
-                        <div style="font-size: 11px;">{{p.name}}</div>
+                        <div style="font-size: 11px; font-weight: 600;">{{p.name}}</div>
                         <div class="card-price">{{p.price}} ₽</div>
+                        <div class="card-sizes">Размеры: {{p.sizes.join(', ')}}</div>
                     </div>
                 </div>
             </div>
@@ -73,35 +81,49 @@
 
         <div v-if="activeTab === 'favs'">
             <h2 class="old-russian" style="font-size: 20px;">Избранное</h2>
-            <div v-if="favItems.length === 0" style="text-align: center; margin-top: 50px; color: #999;">Тут пока пусто</div>
+            <div v-if="favItems.length === 0" style="text-align: center; margin-top: 50px; color: #999;">Ничего не выбрано</div>
             <div v-else class="products-grid">
                 <div v-for="p in favItems" :key="p.id" class="card" @click="openProduct(p)">
                     <button class="fav-btn active" @click.stop="toggleFav(p)">❤</button>
                     <img :src="p.image">
-                    <div class="card-info"><div>{{p.name}}</div><div class="card-price">{{p.price}} ₽</div></div>
+                    <div class="card-info">
+                        <div>{{p.name}}</div>
+                        <div class="card-price">{{p.price}} ₽</div>
+                        <div class="card-sizes">Размеры: {{p.sizes.join(', ')}}</div>
+                    </div>
                 </div>
+            </div>
+        </div>
+
+        <div v-if="activeTab === 'profile'">
+            <div class="profile-card">
+                <img :src="user.photo || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'" class="user-photo">
+                <h3 style="margin: 0; color: var(--gold);">{{user.first_name}} {{user.last_name}}</h3>
+                <p style="font-size: 12px; color: #888;">ID: {{user.id}}</p>
+                <button class="btn-main" @click="contactSupport">НАПИСАТЬ В ПОДДЕРЖКУ</button>
             </div>
         </div>
 
         <div v-if="activeTab === 'cart'">
             <h2 class="old-russian" style="font-size: 20px;">Оформление</h2>
-            <div v-if="cart.length === 0" style="text-align: center; margin-top: 50px; color: #999;">Пусто</div>
+            <div v-if="cart.length === 0" style="text-align: center; margin-top: 50px; color: #999;">Корзина пуста</div>
             <div v-else>
-                <div v-for="item in cart" :key="item.cartId" style="display: flex; gap: 10px; padding: 10px; border-bottom: 1px solid #eee;">
-                    <img :src="item.image" style="width: 40px; height: 50px; object-fit: cover;">
+                <div v-for="item in cart" :key="item.cartId" style="display: flex; gap: 10px; padding: 10px; border-bottom: 1px solid #eee; align-items: center;">
+                    <img :src="item.image" style="width: 40px; height: 50px; object-fit: cover; border-radius: 5px;">
                     <div style="flex: 1; font-size: 12px;"><b>{{item.name}}</b> ({{item.size}})<br>{{item.price}} ₽</div>
-                    <button @click="removeFromCart(item.cartId)">✕</button>
+                    <button @click="removeFromCart(item.cartId)" style="border: none; background: none; color: #ccc;">✕</button>
                 </div>
 
-                <div style="background: #fff; padding: 15px; border-radius: 15px; margin-top: 15px;">
-                    <div class="input-group"><label>ИМЯ</label><input class="input-field" v-model="form.firstName"></div>
-                    <div class="input-group"><label>ТЕЛЕФОН</label><input class="input-field" v-model="form.phone" type="tel"></div>
-                    
+                <div style="background: #fff; padding: 15px; border-radius: 15px; margin-top: 15px; border: 1px solid #eee;">
+                    <div class="input-group">
+                        <label>ТЕЛЕФОН</label>
+                        <input class="input-field" v-model="form.phone" type="tel" placeholder="+7 999 000 00 00">
+                        <div v-if="phoneError" class="error-text">Некорректный номер</div>
+                    </div>
                     <label style="font-size: 12px; font-weight: bold;">ДОСТАВКА</label>
                     <div style="display: flex; gap: 5px; margin: 10px 0;">
                         <button v-for="m in ['СДЭК', 'Почта']" @click="setDelivery(m)" :class="['cat-btn', deliveryMode === m ? 'active' : '']" style="flex: 1;">{{m}}</button>
                     </div>
-
                     <div v-show="deliveryMode">
                         <p style="font-size: 11px;">📍 <b>Адрес:</b> {{address || 'Кликните на карту'}}</p>
                         <div id="map"></div>
@@ -113,22 +135,24 @@
     </div>
 
     <div v-if="selectedProduct" class="modal">
-        <button class="close-btn" @click="selectedProduct = null">✕</button>
+        <button @click="selectedProduct = null" style="position:fixed; top:20px; left:20px; z-index:2100; border:none; background:#fff; border-radius:50%; width:40px; height:40px; box-shadow:0 2px 10px rgba(0,0,0,0.1);">✕</button>
         <img :src="selectedProduct.image" style="width: 100%">
         <div style="padding: 20px;">
             <h2 class="old-russian">{{selectedProduct.name}}</h2>
-            <div class="card-price">{{selectedProduct.price}} ₽</div>
-            <div style="display: flex; margin-top: 15px;">
-                <button v-for="s in selectedProduct.sizes" @click="tempSize = s" :class="['cat-btn', tempSize === s ? 'active' : '']" style="flex: 1;">{{s}}</button>
+            <div class="card-price" style="font-size: 22px;">{{selectedProduct.price}} ₽</div>
+            <p style="font-size: 13px; color: #666;">{{selectedProduct.desc}}</p>
+            <div style="display: flex; gap: 5px; margin-top: 15px;">
+                <button v-for="s in selectedProduct.sizes" @click="tempSize = s" :class="['cat-btn', tempSize === s ? 'active' : '']" style="flex:1;">{{s}}</button>
             </div>
             <button class="btn-main" @click="addToCart">В КОРЗИНУ</button>
         </div>
     </div>
 
     <nav class="bottom-nav">
-        <button @click="activeTab = 'catalog'" :class="['nav-item', activeTab === 'catalog' ? 'active' : '']">🏰 КАТАЛОГ</button>
-        <button @click="activeTab = 'favs'" :class="['nav-item', activeTab === 'favs' ? 'active' : '']">❤ ИЗБРАННОЕ</button>
-        <button @click="activeTab = 'cart'" :class="['nav-item', activeTab === 'cart' ? 'active' : '']">🛒 КОРЗИНА</button>
+        <button @click="activeTab = 'catalog'" :class="['nav-item', activeTab === 'catalog' ? 'active' : '']"><span class="nav-icon">🏰</span>КАТАЛОГ</button>
+        <button @click="activeTab = 'favs'" :class="['nav-item', activeTab === 'favs' ? 'active' : '']"><span class="nav-icon">❤</span>ИЗБРАННОЕ</button>
+        <button @click="activeTab = 'cart'" :class="['nav-item', activeTab === 'cart' ? 'active' : '']"><span class="nav-icon">🛒</span>КОРЗИНА</button>
+        <button @click="activeTab = 'profile'" :class="['nav-item', activeTab === 'profile' ? 'active' : '']"><span class="nav-icon">👤</span>ПРОФИЛЬ</button>
     </nav>
 </div>
 
@@ -148,21 +172,32 @@
                 address: '',
                 map: null,
                 marker: null,
-                form: { firstName: '', phone: '' },
+                form: { name: '', phone: '' },
+                user: { id: '', first_name: 'Гость', last_name: '', photo: '' },
                 products: [
-                    { id: 1, category: 'халаты', name: 'Халат "Белое Облако"', price: 4500, image: '111white.jpg', sizes: ['S','M','L'], desc: 'Шелк.' },
-                    { id: 2, category: 'халаты', name: 'Халат "Красная Заря"', price: 5200, image: '111red.jpg', sizes: ['M','L'], desc: 'Атлас.' },
-                    { id: 3, category: 'халаты', name: 'Халат "Полночь"', price: 4800, image: '111black.jpg', sizes: ['S','M','L'], desc: 'Черный.' }
+                    { id: 1, category: 'халаты', name: 'Халат "Белое Облако"', price: 4500, image: '111white.jpg', sizes: ['S','M','L'], desc: 'Шелк Светлания.' },
+                    { id: 2, category: 'халаты', name: 'Халат "Красная Заря"', price: 5200, image: '111red.jpg', sizes: ['M','L'], desc: 'Атлас Светлания.' },
+                    { id: 3, category: 'халаты', name: 'Халат "Полночь"', price: 4800, image: '111black.jpg', sizes: ['S','M','L'], desc: 'Черный шелк.' }
                 ],
-                cart: [],
-                favorites: []
+                cart: JSON.parse(localStorage.getItem('cart')) || [],
+                favorites: JSON.parse(localStorage.getItem('favs')) || []
             }
+        },
+        watch: {
+            cart: { handler(v) { localStorage.setItem('cart', JSON.stringify(v)); }, deep: true },
+            favorites: { handler(v) { localStorage.setItem('favs', JSON.stringify(v)); }, deep: true }
         },
         computed: {
             filteredProducts() { return this.products.filter(p => p.category === this.currentCategory) },
             favItems() { return this.products.filter(p => this.favorites.includes(p.id)) },
             totalSum() { return this.cart.reduce((s, i) => s + i.price, 0) },
-            isFormValid() { return this.form.firstName && this.form.phone && this.address }
+            phoneError() {
+                const p = this.form.phone.replace(/\D/g, '');
+                if (p.length === 0) return false;
+                const blacklist = ['99999', '00000', '11111', '12345'];
+                return p.length < 10 || blacklist.some(b => p.includes(b));
+            },
+            isFormValid() { return this.form.phone && !this.phoneError && this.address && this.deliveryMode }
         },
         methods: {
             vibrate() { tg.HapticFeedback.impactOccurred('medium'); },
@@ -171,59 +206,42 @@
             openProduct(p) { this.vibrate(); this.selectedProduct = p; this.tempSize = p.sizes[0]; },
             addToCart() { this.vibrate(); this.cart.push({...this.selectedProduct, size: this.tempSize, cartId: Date.now()}); this.selectedProduct = null; },
             removeFromCart(id) { this.cart = this.cart.filter(i => i.cartId !== id); },
-            
-            setDelivery(m) { 
-                this.vibrate(); 
-                this.deliveryMode = m; 
-                // Даем Vue время отрисовать контейнер #map
-                setTimeout(() => { this.initMap(); }, 100);
-            },
-
+            setDelivery(m) { this.vibrate(); this.deliveryMode = m; setTimeout(() => { this.initMap(); }, 100); },
+            contactSupport() { tg.openTelegramLink('https://t.me/putunkeeva'); },
             initMap() {
-                // Если API загружено
                 if (typeof DG !== 'undefined') {
-                    if (this.map) { this.map.remove(); this.map = null; }
-                    
-                    this.map = DG.map('map', {
-                        center: [55.75, 37.61],
-                        zoom: 11,
-                        zoomControl: false,
-                        fullscreenControl: false
-                    });
-
+                    if (this.map) this.map.remove();
+                    this.map = DG.map('map', { center: [55.75, 37.61], zoom: 11, zoomControl: false });
                     this.map.on('click', (e) => {
                         this.vibrate();
                         const {lat, lng} = e.latlng;
-                        if (this.marker) {
-                            this.marker.setLatLng([lat, lng]);
-                        } else {
-                            this.marker = DG.marker([lat, lng]).addTo(this.map);
-                        }
-                        
-                        // Обратное геокодирование через API 2ГИС
+                        if (this.marker) this.marker.setLatLng([lat, lng]); else this.marker = DG.marker([lat, lng]).addTo(this.map);
                         fetch(`https://catalog.api.2gis.com/3.0/items/geocode?lat=${lat}&lon=${lng}&fields=items.address&key=cab82c94-e619-42eb-9814-3361712feaf0`)
-                        .then(r => r.json())
-                        .then(d => {
-                            if (d.result && d.result.items.length > 0) {
-                                this.address = d.result.items[0].address_name || d.result.items[0].full_name;
-                            }
-                        });
+                        .then(r => r.json()).then(d => { if (d.result?.items[0]) this.address = d.result.items[0].address_name; });
                     });
-                } else {
-                    console.error("2GIS SDK не загружен");
                 }
             },
-
             sendOrder() {
-                this.vibrate();
-                const data = { user: this.form, cart: this.cart, total: this.totalSum, address: this.address };
+                const orderNum = new Date().toISOString().slice(0,10).replace(/-/g,'') + '-' + Math.floor(10000 + Math.random() * 90000);
+                const data = { 
+                    orderId: orderNum,
+                    user: { name: this.user.first_name, phone: this.form.phone },
+                    cart: this.cart,
+                    total: this.totalSum,
+                    address: this.address,
+                    delivery: this.deliveryMode
+                };
                 tg.sendData(JSON.stringify(data));
+                localStorage.removeItem('cart');
                 tg.close();
             }
         },
         mounted() {
-            tg.ready();
-            tg.expand();
+            tg.ready(); tg.expand();
+            if (tg.initDataUnsafe?.user) {
+                this.user = tg.initDataUnsafe.user;
+                this.form.name = this.user.first_name;
+            }
         }
     }).mount('#app');
 </script>
