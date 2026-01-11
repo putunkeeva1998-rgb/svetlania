@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -14,6 +15,7 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body { margin: 0; background: var(--bg); font-family: -apple-system, sans-serif; color: var(--dark); overflow-x: hidden; }
         
+        /* ХЕДЕР */
         .header { background: #fff; padding: 15px; text-align: center; border-bottom: 1px solid var(--gold); position: sticky; top: 0; z-index: 100; }
         .old-russian { font-family: 'Ruslan Display', cursive; color: var(--gold); font-size: 24px; margin: 0; text-transform: uppercase; letter-spacing: 2px; }
         
@@ -24,42 +26,45 @@
         .cat-tab { padding: 10px 20px; border-radius: 25px; border: 1.5px solid var(--gold); background: #fff; color: var(--gold); font-size: 12px; font-weight: bold; white-space: nowrap; }
         .cat-tab.active { background: var(--gold); color: #fff; }
 
-        /* КАРТОЧКА ТОВАРА */
+        /* СЕТКА ТОВАРОВ */
         .products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .card { background: #fff; border-radius: 20px; overflow: hidden; border: 1px solid #eee; position: relative; display: flex; flex-direction: column; }
+        .card { background: #fff; border-radius: 20px; overflow: hidden; border: 1px solid #eee; position: relative; display: flex; flex-direction: column; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
         
+        /* СЛАЙДЕР */
         .slider-wrapper { position: relative; width: 100%; aspect-ratio: 3/4; overflow: hidden; }
         .slider-inner { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; height: 100%; }
         .slider-inner img { width: 100%; height: 100%; object-fit: cover; scroll-snap-align: start; flex-shrink: 0; }
 
         /* ПРОЗРАЧНОЕ СЕРДЦЕ */
-        .fav-heart { position: absolute; top: 10px; right: 10px; z-index: 10; background: rgba(255,255,255,0.2); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.3); border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; }
-        .fav-heart svg { width: 18px; height: 18px; fill: none; stroke: white; stroke-width: 2px; }
+        .fav-heart { position: absolute; top: 10px; right: 10px; z-index: 10; background: rgba(255,255,255,0.25); backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.4); border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+        .fav-heart svg { width: 18px; height: 18px; fill: none; stroke: white; stroke-width: 2.5px; }
         .fav-heart.active svg { fill: var(--red); stroke: var(--red); }
 
         .card-info { padding: 12px; text-align: center; }
+        .card-title { font-size: 13px; font-weight: 600; margin-bottom: 5px; height: 32px; overflow: hidden; }
         .card-price { color: var(--gold); font-weight: 800; font-size: 16px; margin-bottom: 10px; }
         
-        /* КРУПНЫЕ РАЗМЕРЫ */
+        /* РАЗМЕРЫ */
         .size-btns { display: flex; justify-content: center; gap: 6px; margin-bottom: 12px; }
-        .s-btn { flex: 1; padding: 12px 0; border: 1.5px solid #eee; border-radius: 10px; font-size: 14px; font-weight: bold; background: #fff; color: var(--dark); }
+        .s-btn { flex: 1; padding: 10px 0; border: 1.5px solid #eee; border-radius: 10px; font-size: 13px; font-weight: bold; background: #fff; }
         .s-btn.active { border-color: var(--gold); background: var(--light-gold); color: var(--gold); }
 
-        .buy-btn { width: 100%; padding: 14px; background: var(--gold); color: #fff; border: none; border-radius: 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+        .buy-btn { width: 100%; padding: 12px; background: var(--gold); color: #fff; border: none; border-radius: 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
 
-        /* НАВИГАЦИЯ (ИСПРАВЛЕННЫЕ ИКОНКИ) */
+        /* НАВИГАЦИЯ */
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; justify-content: space-around; padding: 10px 0 25px 0; border-top: 1px solid #eee; z-index: 1000; }
         .nav-item { border: none; background: none; color: #b0b0b0; display: flex; flex-direction: column; align-items: center; font-size: 11px; gap: 5px; width: 25%; }
         .nav-item.active { color: var(--gold); }
-        .nav-item svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .nav-item svg { width: 24px; height: 24px; fill: currentColor; }
 
-        /* ОКНО УСПЕХА */
-        .order-success { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 3000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .success-card { background: #fff; border-radius: 25px; padding: 30px; text-align: center; width: 100%; max-width: 320px; }
-        .order-num-box { font-size: 22px; font-weight: 900; color: var(--gold); margin: 15px 0; padding: 10px; border: 2px dashed var(--gold); border-radius: 10px; }
+        /* МОДАЛКА */
+        .modal { position: fixed; inset: 0; background: #fff; z-index: 2000; overflow-y: auto; padding-bottom: 40px; }
+        .close-m { position: fixed; top: 15px; left: 15px; width: 40px; height: 40px; border-radius: 50%; background: #fff; border: 1px solid #eee; z-index: 2100; display: flex; align-items: center; justify-content: center; font-size: 20px; }
 
-        #map { width: 100%; height: 200px; border-radius: 15px; margin-top: 10px; border: 1px solid var(--gold); }
-        .input-c { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #eee; font-size: 15px; background: #f9f9f9; margin-bottom: 10px; }
+        /* КАРТА */
+        #map { width: 100%; height: 200px; border-radius: 15px; margin-top: 10px; border: 1.5px solid var(--gold); }
+        .input-c { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #eee; font-size: 15px; background: #f9f9f9; }
+        .order-btn { width: 100%; padding: 18px; background: var(--gold); color: #fff; border: none; border-radius: 18px; font-weight: 800; font-size: 16px; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -75,111 +80,110 @@
             <div class="products-grid">
                 <div v-for="p in filteredProducts" :key="p.id" class="card">
                     <button class="fav-heart" @click.stop="toggleFav(p)" :class="{active: isFav(p)}">
-                        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                        <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                     </button>
-                    <div class="slider-wrapper">
-                        <div class="slider-inner"><img :src="p.images[0]"></div>
+                    <div class="slider-wrapper" @click="openP(p)">
+                        <div class="slider-inner" @scroll="e => handleScroll(e, p)">
+                            <img v-for="img in p.images" :src="img">
+                        </div>
                     </div>
                     <div class="card-info">
-                        <div style="font-size: 13px; font-weight: 600; margin-bottom:5px;">{{p.name}}</div>
+                        <div class="card-title">{{p.name}}</div>
                         <div class="card-price">{{p.price}} ₽</div>
                         <div class="size-btns">
                             <button v-for="s in p.sizes" @click="p.selS = s; vibrate()" :class="['s-btn', p.selS === s ? 'active' : '']">{{s}}</button>
                         </div>
-                        <button class="buy-btn" @click="addToCart(p)">В КОРЗИНУ</button>
+                        <button class="buy-btn" @click="addToCart(p)">В корзину</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="activeTab === 'favs'">
+            <h2 class="old-russian" style="font-size: 18px; margin-bottom: 20px;">Избранное</h2>
+            <div v-if="favItems.length === 0" style="text-align: center; padding: 50px 0; color: var(--gray);">Список пуст</div>
+            <div class="products-grid">
+                <div v-for="p in favItems" :key="p.id" class="card">
+                    <button class="fav-heart active" @click.stop="toggleFav(p)">
+                        <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    </button>
+                    <img :src="p.images[0]" style="width:100%; aspect-ratio:3/4; object-fit:cover;" @click="openP(p)">
+                    <div class="card-info">
+                        <div class="card-price">{{p.price}} ₽</div>
+                        <button class="buy-btn" @click="addToCart(p)">В корзину</button>
                     </div>
                 </div>
             </div>
         </div>
 
         <div v-if="activeTab === 'cart'">
-            <h2 class="old-russian" style="font-size: 18px;">Ваш заказ</h2>
-            <div v-if="cart.length === 0" style="text-align: center; padding: 50px 0; color: var(--gray);">Корзина пуста</div>
+            <h2 class="old-russian" style="font-size: 18px; margin-bottom: 20px;">Оформление</h2>
+            <div v-if="cart.length === 0" style="text-align: center; padding: 50px 0; color: var(--gray);">В корзине ничего нет</div>
             <div v-else>
-                <div v-for="item in cart" :key="item.cartId" style="display:flex; gap:15px; margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:15px;">
-                    <img :src="item.img" style="width:60px; height:80px; object-fit:cover; border-radius:12px;">
-                    <div style="flex:1;">
-                        <div style="font-size:14px; font-weight:600;">{{item.name}}</div>
-                        <div style="font-size:12px; color:var(--gray);">Размер: {{item.size}}</div>
-                        <div style="color:var(--gold); font-weight:700; margin-top:5px;">{{item.price}} ₽</div>
+                <div v-for="item in cart" :key="item.cartId" style="display: flex; gap: 15px; padding: 15px 0; border-bottom: 1px solid #eee;">
+                    <img :src="item.img" style="width: 60px; height: 80px; object-fit: cover; border-radius: 12px;">
+                    <div style="flex: 1;">
+                        <div style="font-size: 14px; font-weight: 600;">{{item.name}}</div>
+                        <div style="font-size: 12px; color: var(--gray);">Размер: {{item.size}}</div>
+                        <div style="color: var(--gold); font-weight: 700;">{{item.price}} ₽</div>
                     </div>
-                    <button @click="removeC(item.cartId)" style="border:none; background:none; font-size:20px; color:#ccc;">✕</button>
+                    <button @click="removeC(item.cartId)" style="border:none; background:none; font-size:20px;">✕</button>
                 </div>
 
                 <div style="margin-top: 25px;">
-                    <input class="input-c" v-model="form.name" placeholder="Имя и Фамилия">
-                    <input class="input-c" v-model="form.phone" placeholder="Телефон" type="tel">
-                    
-                    <div style="display:flex; gap:8px; margin: 15px 0;">
+                    <input class="input-c" v-model="form.name" placeholder="Имя и Фамилия" style="margin-bottom:10px;">
+                    <input class="input-c" v-model="form.phone" placeholder="Телефон" type="tel" style="margin-bottom:15px;">
+                    <div style="display: flex; gap: 8px; margin-bottom: 10px;">
                         <button v-for="d in ['5post', 'СДЭК', 'Почта']" @click="deliv = d; vibrate(); initMap()" :class="['cat-tab', deliv === d ? 'active' : '']" style="flex:1;">{{d}}</button>
                     </div>
                     <div v-show="deliv">
-                        <div style="font-size:12px; margin:10px 0;">📍 {{address || 'Выберите на карте'}}</div>
+                        <div style="font-size: 12px; margin-bottom: 5px;">📍 {{address || 'Выберите адрес на карте'}}</div>
                         <div id="map"></div>
                     </div>
                 </div>
-                <button class="buy-btn" style="height:60px; margin-top:20px; font-size:16px;" @click="send" :disabled="!isValid">ОФОРМИТЬ: {{total}} ₽</button>
-            </div>
-        </div>
-
-        <div v-if="activeTab === 'favs'">
-            <h2 class="old-russian" style="font-size: 18px;">Избранное</h2>
-            <div v-if="favItems.length === 0" style="text-align: center; padding: 50px 0; color: var(--gray);">Здесь пока пусто</div>
-            <div class="products-grid">
-                <div v-for="p in favItems" :key="p.id" class="card">
-                    <img :src="p.images[0]" style="width:100%; aspect-ratio:3/4; object-fit:cover;">
-                    <div class="card-info">
-                        <div class="card-price">{{p.price}} ₽</div>
-                        <button class="buy-btn" @click="addToCart(p)">В КОРЗИНУ</button>
-                    </div>
-                </div>
+                <button class="order-btn" @click="send" :disabled="!isValid">ЗАКАЗАТЬ: {{total}} ₽</button>
             </div>
         </div>
 
         <div v-if="activeTab === 'profile'">
-            <div style="text-align: center; padding: 30px 0;">
-                <img :src="user.photo || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--gold);">
-                <h2 style="margin-top: 10px;">{{user.first_name}}</h2>
-            </div>
-            <div v-if="history.length" style="padding: 0 10px;">
-                <h3 class="old-russian" style="font-size:16px; margin-bottom:15px;">Мои заказы:</h3>
-                <div v-for="h in history" style="background:#f9f9f9; padding:15px; border-radius:15px; margin-bottom:10px; border:1px solid #eee;">
-                    <div style="display:flex; justify-content:space-between; font-weight:700;">
-                        <span>Заказ #{{h.id}}</span>
-                        <span>{{h.total}} ₽</span>
-                    </div>
-                    <div style="font-size:11px; color:var(--gray); margin-top:5px;">{{h.date}}</div>
-                </div>
+            <div style="text-align: center; padding: 40px 0;">
+                <img :src="user.photo || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'" style="width: 90px; height: 90px; border-radius: 50%; border: 2px solid var(--gold);">
+                <h2>{{user.first_name}}</h2>
+                <button class="cat-tab" @click="tg.openTelegramLink('https://t.me/putunkeeva')">Служба заботы</button>
             </div>
         </div>
     </div>
 
-    <div v-if="showSuccess" class="order-success">
-        <div class="success-card">
-            <div style="font-size:45px;">👑</div>
-            <h2 class="old-russian" style="font-size:20px; margin: 10px 0;">Заказ принят!</h2>
-            <p style="font-size:14px; color: var(--gray);">Запишите ваш номер заказа:</p>
-            <div class="order-num-box">{{lastOrderNum}}</div>
-            <button class="buy-btn" @click="showSuccess = false">ВЕРНУТЬСЯ</button>
+    <div v-if="selP" class="modal">
+        <button class="close-m" @click="selP = null">✕</button>
+        <div class="slider-wrapper" style="aspect-ratio: 1/1.3;">
+            <div class="slider-inner" @scroll="e => handleScroll(e, selP)">
+                <img v-for="img in selP.images" :src="img">
+            </div>
+        </div>
+        <div style="padding: 20px;">
+            <h2 class="old-russian">{{selP.name}}</h2>
+            <div style="font-size: 24px; color: var(--gold); font-weight: 800; margin: 10px 0;">{{selP.price}} ₽</div>
+            <p style="font-size: 14px; color: #666; line-height: 1.5;">{{selP.desc}}</p>
+            <div class="size-btns" style="margin: 20px 0;">
+                <button v-for="s in selP.sizes" @click="selP.selS = s; vibrate()" :class="['s-btn', selP.selS === s ? 'active' : '']" style="padding: 15px;">{{s}}</button>
+            </div>
+            <button class="order-btn" @click="addToCart(selP)">Добавить в корзину</button>
         </div>
     </div>
 
     <nav class="bottom-nav">
         <button @click="activeTab = 'catalog'; vibrate()" :class="['nav-item', activeTab === 'catalog' ? 'active' : '']">
-            <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-            <span>Каталог</span>
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Каталог</span>
         </button>
         <button @click="activeTab = 'favs'; vibrate()" :class="['nav-item', activeTab === 'favs' ? 'active' : '']">
-            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-            <span>Избранное</span>
+            <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span>Избранное</span>
         </button>
         <button @click="activeTab = 'cart'; vibrate()" :class="['nav-item', activeTab === 'cart' ? 'active' : '']">
-            <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-            <span>Корзина</span>
+            <svg viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg><span>Корзина</span>
         </button>
         <button @click="activeTab = 'profile'; vibrate()" :class="['nav-item', activeTab === 'profile' ? 'active' : '']">
-            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-            <span>Профиль</span>
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span>Профиль</span>
         </button>
     </nav>
 </div>
@@ -194,31 +198,30 @@
                 activeTab: 'catalog',
                 currentCat: 'халаты',
                 categories: ['халаты', 'сорочки'],
-                showSuccess: false,
-                lastOrderNum: '',
+                selP: null,
                 deliv: '',
                 address: '',
                 user: { first_name: 'Гость', photo: '' },
                 form: { name: '', phone: '' },
                 products: [
-                    { id: 1, category: 'халаты', name: 'Халат "Белое Облако"', price: 4500, images: ['111white.jpg'], sizes: ['S','M','L'], selS: 'S' },
-                    { id: 2, category: 'халаты', name: 'Халат "Красная Заря"', price: 5200, images: ['111red.jpg'], sizes: ['M','L'], selS: 'M' },
-                    { id: 3, category: 'халаты', name: 'Халат "Полночь"', price: 4800, images: ['111black.jpg'], sizes: ['S','M','L'], selS: 'S' },
-                    { id: 4, category: 'сорочки', name: 'Сорочка "Аметист"', price: 3500, images: ['111red.jpg'], sizes: ['S','M'], selS: 'S' }
+                    { id: 1, category: 'халаты', name: 'Халат "Белое Облако"', price: 4500, images: ['111white.jpg'], sizes: ['S','M','L'], selS: 'S', aIdx: 0, desc: 'Нежнейший белый шелк.' },
+                    { id: 2, category: 'халаты', name: 'Халат "Красная Заря"', price: 5200, images: ['111red.jpg'], sizes: ['M','L'], selS: 'M', aIdx: 0, desc: 'Яркий атлас для особого настроения.' },
+                    { id: 3, category: 'халаты', name: 'Халат "Полночь"', price: 4800, images: ['111black.jpg'], sizes: ['S','M','L'], selS: 'S', aIdx: 0, desc: 'Благородная классика в черном цвете.' },
+                    { id: 4, category: 'сорочки', name: 'Сорочка "Кружево"', price: 3500, images: ['111white.jpg'], sizes: ['S','M'], selS: 'S', aIdx: 0, desc: 'Элегантная сорочка с кружевными вставками.' }
                 ],
                 cart: JSON.parse(localStorage.getItem('sv_cart') || '[]'),
-                favs: JSON.parse(localStorage.getItem('sv_favs') || '[]'),
-                history: JSON.parse(localStorage.getItem('sv_history') || '[]')
+                favs: JSON.parse(localStorage.getItem('sv_favs') || '[]')
             }
         },
         computed: {
             filteredProducts() { return this.products.filter(p => p.category === this.currentCat) },
             favItems() { return this.products.filter(p => this.favs.includes(p.id)) },
             total() { return this.cart.reduce((s, i) => s + i.price, 0) },
-            isValid() { return this.form.name.length > 2 && this.form.phone.length > 10 && this.address; }
+            isValid() { return this.form.name.length > 2 && this.form.phone.length > 10 && this.address && this.cart.length > 0; }
         },
         methods: {
             vibrate() { tg.HapticFeedback.impactOccurred('medium'); },
+            handleScroll(e, p) { p.aIdx = Math.round(e.target.scrollLeft / e.target.offsetWidth); },
             toggleFav(p) {
                 this.vibrate();
                 const i = this.favs.indexOf(p.id);
@@ -226,11 +229,12 @@
                 localStorage.setItem('sv_favs', JSON.stringify(this.favs));
             },
             isFav(p) { return this.favs.includes(p.id); },
+            openP(p) { this.vibrate(); this.selP = p; },
             addToCart(p) {
                 this.vibrate();
                 this.cart.push({ cartId: Date.now(), name: p.name, price: p.price, size: p.selS, img: p.images[0] });
                 localStorage.setItem('sv_cart', JSON.stringify(this.cart));
-                tg.showScanQrPopup({ text: "Добавлено в корзину" }); setTimeout(() => tg.closeScanQrPopup(), 1000);
+                this.selP = null;
             },
             removeC(id) { 
                 this.cart = this.cart.filter(i => i.cartId !== id);
@@ -250,26 +254,19 @@
             },
             send() {
                 this.vibrate();
-                // ГЕНЕРАЦИЯ НОМЕРА: ДАТА (ДДММГГ) + 5 ЦИФР
-                const datePart = new Date().toLocaleDateString('ru-RU').replace(/\./g, '').slice(0, 4) + new Date().getFullYear().toString().slice(-2);
-                const randomPart = Math.floor(10000 + Math.random() * 89999);
-                this.lastOrderNum = `${datePart}-${randomPart}`;
-                
-                const orderData = { id: this.lastOrderNum, user: this.form, cart: this.cart, total: this.total, address: this.address, date: new Date().toLocaleString() };
-                
-                this.history.unshift({ id: this.lastOrderNum, total: this.total, date: new Date().toLocaleDateString() });
-                localStorage.setItem('sv_history', JSON.stringify(this.history));
-                
-                tg.sendData(JSON.stringify(orderData));
-                this.showSuccess = true;
-                this.cart = [];
+                const orderNum = Math.floor(10000 + Math.random() * 90000);
+                const orderId = `${new Date().toLocaleDateString().replace(/\./g, '')}-${orderNum}`;
+                tg.sendData(JSON.stringify({ id: orderId, user: this.form, cart: this.cart, total: this.total, address: this.address }));
                 localStorage.removeItem('sv_cart');
+                tg.close();
             }
         },
         mounted() {
             tg.ready(); tg.expand();
             if (tg.initDataUnsafe?.user) {
-                this.user = { first_name: tg.initDataUnsafe.user.first_name, photo: tg.initDataUnsafe.user.photo_url };
+                const u = tg.initDataUnsafe.user;
+                this.user = { first_name: u.first_name, photo: u.photo_url };
+                this.form.name = (u.first_name + ' ' + (u.last_name || '')).trim();
             }
         }
     }).mount('#app');
