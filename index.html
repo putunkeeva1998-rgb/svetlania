@@ -4,177 +4,156 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SVETLANIA</title>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://maps.api.2gis.ru/2.0/loader.js?pkg=full"></script>
     <link href="https://fonts.googleapis.com/css2?family=Ruslan+Display&display=swap" rel="stylesheet">
     
     <style>
-        :root { --gold: #D4AF37; --dark: #1a1a1a; }
-        body { background-color: #fffaf0; font-family: 'Segoe UI', sans-serif; color: var(--dark); }
-        .old-russian { font-family: 'Ruslan Display', cursive; color: var(--gold); text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
-        .gold-bg { background-color: var(--gold); }
-        .gold-border { border-color: var(--gold); }
-        .gold-text { color: var(--gold); }
-        .shadow-gold { shadow-color: var(--gold); }
+        :root { --gold: #D4AF37; --bg: #fffaf0; --text: #2c2c2c; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; background: var(--bg); font-family: -apple-system, system-ui, sans-serif; color: var(--text); }
         
-        /* Стили для карты */
-        #map { width: 100%; height: 200px; border-radius: 12px; margin-top: 10px; border: 1px solid var(--gold); }
+        /* Шапка */
+        .header { background: #fff; padding: 15px; text-align: center; border-bottom: 2px solid var(--gold); position: sticky; top: 0; z-index: 100; }
+        .old-russian { font-family: 'Ruslan Display', cursive; color: var(--gold); font-size: 26px; margin: 0; text-transform: uppercase; }
         
-        /* Анимация перехода в карточку */
-        .fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
-        .fade-enter-from, .fade-leave-to { opacity: 0; }
+        .container { padding: 12px; padding-bottom: 100px; }
+        
+        /* Кнопки категорий */
+        .categories-nav { display: flex; gap: 8px; overflow-x: auto; margin-bottom: 15px; padding: 5px 0; scrollbar-width: none; }
+        .categories-nav::-webkit-scrollbar { display: none; }
+        .cat-btn { padding: 8px 22px; border-radius: 20px; border: 1px solid var(--gold); background: #fff; color: var(--gold); font-weight: bold; font-size: 13px; white-space: nowrap; transition: 0.2s; }
+        .cat-btn.active { background: var(--gold); color: #fff; box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3); }
+
+        /* Сетка товаров */
+        .products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .card { background: #fff; border-radius: 18px; overflow: hidden; box-shadow: 0 3px 10px rgba(0,0,0,0.05); position: relative; border: 1px solid rgba(212, 175, 55, 0.1); }
+        .card img { width: 100%; aspect-ratio: 3/4; object-fit: cover; display: block; background: #fdfdfd; }
+        .card-info { padding: 10px; text-align: center; }
+        .card-name { font-size: 11px; font-weight: 600; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .card-price { color: var(--gold); font-weight: 800; font-size: 14px; }
+        .fav-btn { position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.8); border: none; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #ccc; }
+        .fav-btn.active { color: #e74c3c; }
+
+        /* Нижнее меню */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #eee; z-index: 1000; }
+        .nav-item { border: none; background: none; color: #aaa; display: flex; flex-direction: column; align-items: center; font-size: 9px; font-weight: 800; letter-spacing: 1px; }
+        .nav-item.active { color: var(--gold); }
+        .nav-icon { font-size: 22px; margin-bottom: 4px; }
+
+        /* Модалка (Карточка товара) */
+        .modal { position: fixed; inset: 0; background: #fff; z-index: 2000; overflow-y: auto; padding: 0; }
+        .close-btn { position: fixed; top: 15px; left: 15px; background: rgba(255,255,255,0.9); border-radius: 50%; width: 40px; height: 40px; border: 1px solid #eee; z-index: 2010; font-size: 20px; font-weight: bold; color: var(--gold); }
+        .modal-img { width: 100%; aspect-ratio: 3/4; object-fit: cover; }
+        .modal-content { padding: 25px; }
+        .size-grid { display: flex; gap: 10px; margin: 15px 0; }
+        .size-btn { flex: 1; padding: 12px; border-radius: 12px; border: 1px solid var(--gold); background: #fff; color: var(--gold); font-weight: bold; }
+        .size-btn.active { background: var(--gold); color: #fff; }
+        .btn-buy { width: 100%; padding: 18px; background: var(--gold); color: #fff; border: none; border-radius: 15px; font-weight: bold; font-size: 16px; box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4); margin-top: 20px; }
+
+        /* Карта */
+        #map { width: 100%; height: 220px; border-radius: 15px; margin-top: 15px; border: 2px solid var(--gold); }
     </style>
 </head>
-<body class="overflow-x-hidden">
-<div id="app" class="pb-24">
-    <header class="bg-white border-b gold-border p-4 sticky top-0 z-40 text-center">
-        <h1 class="old-russian text-3xl tracking-widest">SVETLANIA</h1>
-    </header>
+<body>
 
-    <div v-if="activeTab === 'catalog'" class="p-4">
-        <div class="flex gap-2 mb-6 overflow-x-auto no-scrollbar">
-            <button v-for="cat in categories" :key="cat" @click="setCategory(cat)"
-                    :class="['px-6 py-2 rounded-full border transition-all duration-300 font-bold text-sm', 
-                    currentCategory === cat ? 'gold-bg text-white border-transparent' : 'bg-white gold-text gold-border']">
-                {{ cat.toUpperCase() }}
-            </button>
-        </div>
-
-        <div class="grid grid-cols-2 gap-4">
-            <div v-for="product in filteredProducts" :key="product.id" class="bg-white rounded-2xl shadow-sm border border-orange-50 overflow-hidden relative">
-                <button @click.stop="toggleFavorite(product)" class="absolute top-2 right-2 z-10 p-2 bg-white/90 rounded-full shadow-md">
-                    <span :class="isFavorite(product) ? 'text-red-500' : 'text-gray-300'" class="text-xl">❤</span>
-                </button>
-                
-                <div @click="openProduct(product)">
-                    <img :src="111white.jpg" class="w-full aspect-[3/4] object-cover" alt="product">
-                    <div class="p-3">
-                        <h3 class="text-xs font-semibold truncate uppercase">{{ 111white.jpg }}</h3>
-                        <p class="gold-text font-bold mt-1">{{ 1500 }} ₽</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+<div id="app">
+    <div class="header">
+        <h1 class="old-russian">SVETLANIA</h1>
     </div>
 
-    <div v-if="activeTab === 'favorites'" class="p-4">
-        <h2 class="old-russian text-2xl mb-4">Избранное</h2>
-        <div v-if="favorites.length === 0" class="text-center py-20 text-gray-400 italic">Душа желает красоты... (Пусто)</div>
-        <div v-for="item in favorites" :key="item.id" class="flex items-center gap-4 bg-white p-3 rounded-xl mb-3 border border-orange-100">
-            <img :src="item.image" class="w-16 h-20 object-cover rounded-lg">
-            <div class="flex-1">
-                <h3 class="font-bold text-sm">{{ item.name }}</h3>
-                <p class="gold-text text-sm">{{ item.price }} ₽</p>
-            </div>
-            <button @click="removeFromFavorites(item.id)" class="text-red-400 p-2">✕</button>
-        </div>
-    </div>
-
-    <div v-if="activeTab === 'cart'" class="p-4">
-        <h2 class="old-russian text-2xl mb-4">Корзина</h2>
-        <div v-if="cart.length === 0" class="text-center py-20 text-gray-400 italic">Корзина пуста</div>
-        <div v-else>
-            <div v-for="item in cart" :key="item.cartId" class="flex gap-4 bg-white p-3 rounded-xl mb-3 border border-orange-100">
-                <img :src="item.image" class="w-20 h-24 object-cover rounded-lg">
-                <div class="flex-1">
-                    <div class="flex justify-between items-start">
-                        <h3 class="font-bold uppercase text-sm">{{ item.name }}</h3>
-                        <button @click="removeFromCart(item.cartId)" class="text-gray-300">✕</button>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-1">Размер: <span class="gold-text font-bold">{{ item.selectedSize }}</span></p>
-                    <p class="gold-text font-bold mt-2">{{ item.price }} ₽</p>
-                </div>
-            </div>
-
-            <div class="mt-8 bg-white p-4 rounded-2xl border gold-border shadow-sm">
-                <h3 class="font-bold mb-3 text-sm">ВЫБЕРИТЕ ДОСТАВКУ:</h3>
-                <div class="grid grid-cols-3 gap-2 mb-4">
-                    <button v-for="m in ['5post', 'СДЭК', 'Почта']" @click="setDelivery(m)"
-                            :class="['py-2 text-[10px] font-bold rounded-lg border transition-all', 
-                            deliveryMode === m ? 'gold-bg text-white border-transparent' : 'gold-border gold-text']">
-                        {{ m }}
-                    </button>
-                </div>
-                
-                <div v-if="deliveryMode">
-                    <p class="text-[10px] text-gray-500 mb-1 uppercase">Адрес получения:</p>
-                    <p class="text-xs font-bold mb-3">{{ address || 'Нажмите на карту для выбора адреса' }}</p>
-                    <div id="map"></div>
-                </div>
-            </div>
-
-            <button @click="sendOrder" :disabled="!address" 
-                    :class="['w-full py-4 rounded-xl mt-6 font-bold text-white shadow-lg transition-all', address ? 'gold-bg' : 'bg-gray-300']">
-                ОФОРМИТЬ РАСЧЕТ: {{ totalSum }} ₽
-            </button>
-        </div>
-    </div>
-
-    <div v-if="activeTab === 'profile'" class="p-4 text-center">
-        <div class="mt-6 flex flex-col items-center">
-            <img :src="user.photo" class="w-24 h-24 rounded-full border-4 gold-border shadow-xl mb-4">
-            <h2 class="old-russian text-2xl uppercase">{{ user.name }}</h2>
-        </div>
-        
-        <div class="mt-10 text-left">
-            <h3 class="font-bold text-sm mb-4 border-b pb-2 uppercase tracking-tighter">История заказов</h3>
-            <div class="text-center py-10 text-gray-400 text-sm bg-white rounded-xl italic">История ваших расчетов пуста</div>
-        </div>
-
-        <a href="https://t.me/putunkeeva" @click="vibrate" class="block w-full mt-12 p-4 border gold-border gold-text rounded-xl font-bold uppercase text-sm tracking-widest shadow-sm">
-            Служба поддержки
-        </a>
-    </div>
-
-    <transition name="fade">
-        <div v-if="selectedProduct" class="fixed inset-0 z-[100] bg-white overflow-y-auto">
-            <button @click="closeProduct" class="fixed top-4 left-4 z-[110] bg-white/80 w-10 h-10 rounded-full flex items-center justify-center shadow-lg gold-text text-2xl font-bold">✕</button>
-            
-            <img :src="selectedProduct.image" class="w-full aspect-[3/4] object-cover">
-            
-            <div class="p-6">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-2xl font-bold uppercase tracking-tighter">{{ selectedProduct.name }}</h2>
-                    <p class="text-2xl gold-text font-black">{{ selectedProduct.price }} ₽</p>
-                </div>
-
-                <div class="mt-8">
-                    <p class="font-bold text-xs text-gray-400 uppercase mb-3">Выберите размер:</p>
-                    <div class="flex gap-3">
-                        <button v-for="s in selectedProduct.sizes" @click="tempSize = s; vibrate()"
-                                :class="['w-12 h-12 rounded-lg border-2 font-bold transition-all', 
-                                tempSize === s ? 'gold-bg text-white border-transparent scale-110 shadow-md' : 'gold-border gold-text']">
-                            {{ s }}
-                        </button>
-                    </div>
-                </div>
-
-                <div class="mt-8">
-                    <p class="font-bold text-xs text-gray-400 uppercase mb-2">О товаре:</p>
-                    <p class="text-gray-600 leading-relaxed text-sm">{{ selectedProduct.desc }}</p>
-                </div>
-
-                <button @click="addToCart" class="w-full gold-bg text-white py-5 rounded-2xl mt-10 font-bold text-lg shadow-xl uppercase tracking-widest">
-                    Добавить в корзину
+    <div class="container">
+        <div v-if="activeTab === 'catalog'">
+            <div class="categories-nav">
+                <button v-for="cat in categories" :key="cat" 
+                        @click="currentCategory = cat; vibrate()" 
+                        :class="['cat-btn', currentCategory === cat ? 'active' : '']">
+                    {{ cat.toUpperCase() }}
                 </button>
             </div>
+            
+            <div class="products-grid">
+                <div v-for="p in filteredProducts" :key="p.id" class="card" @click="openProduct(p)">
+                    <button class="fav-btn" @click.stop="toggleFav(p)" :class="{active: isFav(p)}">❤</button>
+                    <img :src="p.image" loading="lazy">
+                    <div class="card-info">
+                        <div class="card-name">{{ p.name }}</div>
+                        <div class="card-price">{{ p.price }} ₽</div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </transition>
 
-    <nav class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t gold-border flex justify-around py-3 z-[60]">
-        <button v-for="(btn, key) in navButtons" @click="setTab(key)" 
-                :class="['flex flex-col items-center gap-1 transition-all', activeTab === key ? 'gold-text scale-110' : 'text-gray-400']">
-            <span class="text-2xl">{{ btn.icon }}</span>
-            <span class="text-[9px] font-black uppercase tracking-tighter">{{ btn.label }}</span>
+        <div v-if="activeTab === 'cart'" style="padding-top: 10px;">
+            <h2 class="old-russian" style="font-size: 22px; margin-bottom: 20px;">Ваша корзина</h2>
+            <div v-if="cart.length === 0" style="text-align: center; color: #999; margin-top: 60px;">Пока пусто...</div>
+            <div v-else>
+                <div v-for="item in cart" :key="item.cartId" style="display: flex; gap: 15px; background: #fff; padding: 12px; border-radius: 15px; margin-bottom: 12px; align-items: center;">
+                    <img :src="item.image" style="width: 70px; height: 90px; object-fit: cover; border-radius: 10px;">
+                    <div style="flex: 1;">
+                        <div style="font-weight: bold; font-size: 14px; text-transform: uppercase;">{{ item.name }}</div>
+                        <div style="font-size: 12px; color: #777; margin: 4px 0;">Размер: {{ item.size }}</div>
+                        <div class="card-price">{{ item.price }} ₽</div>
+                    </div>
+                    <button @click="removeFromCart(item.cartId)" style="border: none; background: none; color: #ddd; font-size: 20px;">✕</button>
+                </div>
+
+                <div style="margin-top: 30px; background: #fff; padding: 15px; border-radius: 20px;">
+                    <p style="font-weight: bold; font-size: 12px; color: #999; text-transform: uppercase; margin-bottom: 10px;">Доставка:</p>
+                    <div style="display: flex; gap: 8px;">
+                        <button v-for="m in ['5post', 'СДЭК', 'Почта']" @click="setDelivery(m)" :class="['cat-btn', deliveryMode === m ? 'active' : '']" style="flex: 1;">{{m}}</button>
+                    </div>
+                    <div v-if="deliveryMode">
+                        <p style="font-size: 13px; margin-top: 15px;">📍 <b>Адрес:</b> {{ address || 'Нажмите на карту' }}</p>
+                        <div id="map"></div>
+                    </div>
+                </div>
+                <button class="btn-buy" @click="sendOrder" :disabled="!address">ОФОРМИТЬ РАСЧЕТ: {{ totalSum }} ₽</button>
+            </div>
+        </div>
+
+        <div v-if="activeTab === 'profile'" style="text-align: center; padding-top: 40px;">
+            <img :src="user.photo" style="width: 110px; height: 110px; border-radius: 50%; border: 4px solid var(--gold); box-shadow: 0 5px 20px rgba(212,175,55,0.2);">
+            <h3 class="old-russian" style="margin-top: 20px;">{{ user.name }}</h3>
+            <div style="margin-top: 50px; display: flex; flex-direction: column; gap: 10px;">
+                <button class="btn-buy" style="background: #fff; color: var(--gold); border: 1px solid var(--gold); box-shadow: none;" @click="tg.openTelegramLink('https://t.me/putunkeeva')">НАПИСАТЬ В ПОДДЕРЖКУ</button>
+            </div>
+        </div>
+    </div>
+
+    <div v-if="selectedProduct" class="modal">
+        <button class="close-btn" @click="selectedProduct = null">✕</button>
+        <img :src="selectedProduct.image" class="modal-img">
+        <div class="modal-content">
+            <h2 class="old-russian" style="font-size: 24px;">{{ selectedProduct.name }}</h2>
+            <div class="card-price" style="font-size: 26px; margin: 10px 0;">{{ selectedProduct.price }} ₽</div>
+            
+            <p style="font-size: 12px; color: #999; text-transform: uppercase; margin-top: 25px; font-weight: bold;">Выберите размер:</p>
+            <div class="size-grid">
+                <button v-for="s in selectedProduct.sizes" @click="tempSize = s; vibrate()" :class="['size-btn', tempSize === s ? 'active' : '']">{{s}}</button>
+            </div>
+
+            <p style="color: #666; font-size: 14px; line-height: 1.6; margin-top: 25px;">{{ selectedProduct.desc }}</p>
+            <button class="btn-buy" @click="addToCart">ДОБАВИТЬ В КОРЗИНУ</button>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <button @click="activeTab = 'catalog'; vibrate()" :class="['nav-item', activeTab === 'catalog' ? 'active' : '']">
+            <span class="nav-icon">🏯</span>КАТАЛОГ
+        </button>
+        <button @click="activeTab = 'cart'; vibrate()" :class="['nav-item', activeTab === 'cart' ? 'active' : '']">
+            <span class="nav-icon">🛒</span>КОРЗИНА
+        </button>
+        <button @click="activeTab = 'profile'; vibrate()" :class="['nav-item', activeTab === 'profile' ? 'active' : '']">
+            <span class="nav-icon">👤</span>ПРОФИЛЬ
         </button>
     </nav>
 </div>
 
 <script>
-    const { createApp } = Vue;
     const tg = window.Telegram.WebApp;
+    const { createApp } = Vue;
 
     createApp({
         data() {
@@ -183,121 +162,111 @@
                 currentCategory: 'халаты',
                 categories: ['халаты', 'сорочки'],
                 selectedProduct: null,
-                tempSize: null,
-                deliveryMode: null,
+                tempSize: 'S',
+                deliveryMode: '',
                 address: '',
                 map: null,
                 user: { name: 'Гость', photo: 'https://cdn-icons-png.flaticon.com/512/1144/1144760.png' },
                 
-                // ТОВАРЫ: Просто меняйте имена файлов в поле image
+                // --- ВАШ КАТАЛОГ ТОВАРОВ ---
+                // Просто меняйте текст и названия картинок здесь
                 products: [
-                    { id: 1, category: 'халаты', name: 'Белый Халат "Светлания"', price: 4500, image: '111white.jpg', sizes: ['S', 'M', 'L'], desc: 'Элегантный шелковый халат с ручной вышивкой в древнерусском стиле.' },
-                    { id: 2, category: 'халаты', name: 'Красный Халат "Заря"', price: 5200, image: '111red.jpg', sizes: ['M', 'L', 'XL'], desc: 'Благородный бархат и золотые нити для истинных ценительниц комфорта.' },
-                    { id: 3, category: 'сорочки', name: 'Сорочка "Утренняя"', price: 2800, image: '111white.jpg', sizes: ['XS', 'S', 'M'], desc: 'Легкость и нежность хлопка для вашего самого сладкого сна.' },
-                    { id: 4, category: 'сорочки', name: 'Сорочка "Вечерняя"', price: 3100, image: '111black.jpg', sizes: ['S', 'M', 'L'], desc: 'Изысканное кружево и атлас подчеркнут вашу природную красоту.' }
+                    { 
+                        id: 1, 
+                        category: 'халаты', 
+                        name: 'Халат "Белое Облако"', 
+                        price: 4500, 
+                        image: '111white.jpg', // Имя файла на GitHub
+                        sizes: ['S', 'M', 'L'], 
+                        desc: 'Нежнейший шелк и ручная отделка для вашего уюта.' 
+                    },
+                    { 
+                        id: 2, 
+                        category: 'халаты', 
+                        name: 'Халат "Красная Заря"', 
+                        price: 5200, 
+                        image: '111red.jpg', // Имя файла на GitHub
+                        sizes: ['S', 'M', 'L'], 
+                        desc: 'Роскошный атласный халат в глубоком красном цвете.' 
+                    },
+                    { 
+                        id: 3, 
+                        category: 'сорочки', 
+                        name: 'Сорочка "Кружево"', 
+                        price: 2800, 
+                        image: '111black.jpg', 
+                        sizes: ['S', 'M'], 
+                        desc: 'Легкая и соблазнительная сорочка с кружевной вставкой.' 
+                    }
                 ],
-                
-                favorites: [],
                 cart: [],
-                navButtons: {
-                    catalog: { label: 'Каталог', icon: '🏰' },
-                    favorites: { label: 'Избранное', icon: '❤' },
-                    cart: { label: 'Корзина', icon: '🛒' },
-                    profile: { label: 'Профиль', icon: '👤' }
-                }
+                favorites: []
             }
         },
         computed: {
             filteredProducts() { return this.products.filter(p => p.category === this.currentCategory) },
-            totalSum() { return this.cart.reduce((sum, item) => sum + item.price, 0) }
+            totalSum() { return this.cart.reduce((s, i) => s + i.price, 0) }
         },
         methods: {
-            vibrate() { if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium'); },
-            setTab(tab) { this.vibrate(); this.activeTab = tab; },
-            setCategory(cat) { this.vibrate(); this.currentCategory = cat; },
+            vibrate() { tg.HapticFeedback.impactOccurred('medium'); },
             openProduct(p) { this.vibrate(); this.selectedProduct = p; this.tempSize = p.sizes[0]; },
-            closeProduct() { this.selectedProduct = null; },
-            
-            isFavorite(p) { return this.favorites.some(f => f.id === p.id) },
-            toggleFavorite(p) {
-                this.vibrate();
-                const idx = this.favorites.findIndex(f => f.id === p.id);
-                if (idx > -1) this.favorites.splice(idx, 1);
-                else this.favorites.push(p);
-            },
-            removeFromFavorites(id) { this.favorites = this.favorites.filter(f => f.id !== id); },
+            toggleFav(p) { this.vibrate(); const i = this.favorites.indexOf(p.id); i > -1 ? this.favorites.splice(i, 1) : this.favorites.push(p.id); },
+            isFav(p) { return this.favorites.includes(p.id); },
             
             addToCart() {
                 this.vibrate();
-                this.cart.push({ 
-                    ...this.selectedProduct, 
-                    selectedSize: this.tempSize, 
-                    cartId: Date.now() 
-                });
+                this.cart.push({...this.selectedProduct, size: this.tempSize, cartId: Date.now()});
                 this.selectedProduct = null;
-                this.setTab('cart');
+                tg.MainButton.setText('ПЕРЕЙТИ В КОРЗИНУ').show().onClick(() => { this.activeTab = 'cart'; tg.MainButton.hide(); });
             },
-            removeFromCart(cartId) { this.vibrate(); this.cart = this.cart.filter(i => i.cartId !== cartId); },
+            removeFromCart(id) { this.vibrate(); this.cart = this.cart.filter(i => i.cartId !== id); },
             
-            setDelivery(mode) {
+            setDelivery(m) {
                 this.vibrate();
-                this.deliveryMode = mode;
-                this.$nextTick(() => this.initMap());
+                this.deliveryMode = m;
+                if (!window.dg) {
+                    const s = document.createElement('script');
+                    s.src = "https://maps.api.2gis.ru/2.0/loader.js?pkg=full";
+                    s.onload = () => this.initMap();
+                    document.head.appendChild(s);
+                } else {
+                    this.initMap();
+                }
             },
-            
             initMap() {
-                if (this.map) return;
                 dg.loader.init(() => {
-                    this.map = new dg.Map('map', { 
-                        center: [55.75, 37.61], 
-                        zoom: 11,
-                        fullscreenControl: false
-                    });
-                    
-                    this.map.on('click', (e) => {
-                        this.vibrate();
-                        const { lat, lng } = e.latlng;
-                        fetch(`https://catalog.api.2gis.com/3.0/items/geocode?lat=${lat}&lon=${lng}&fields=items.address&key=cab82c94-e619-42eb-9814-3361712feaf0`)
-                        .then(r => r.json())
-                        .then(data => {
-                            if (data.result?.items?.length > 0) {
-                                const res = data.result.items[0];
-                                this.address = res.address_name || res.full_name;
-                            } else {
-                                this.address = "Адрес не определен, попробуйте другую точку";
-                            }
+                    setTimeout(() => {
+                        this.map = new dg.Map('map', { center: [55.75, 37.61], zoom: 11 });
+                        this.map.on('click', (e) => {
+                            this.vibrate();
+                            const {lat, lng} = e.latlng;
+                            fetch(`https://catalog.api.2gis.com/3.0/items/geocode?lat=${lat}&lon=${lng}&fields=items.address&key=cab82c94-e619-42eb-9814-3361712feaf0`)
+                            .then(r => r.json()).then(d => {
+                                if (d.result?.items[0]) this.address = d.result.items[0].address_name;
+                            });
                         });
-                    });
+                    }, 100);
                 });
             },
-            
             sendOrder() {
                 this.vibrate();
-                const orderData = {
+                const data = {
                     items: this.cart,
                     total: this.totalSum,
-                    address: `${this.deliveryMode}: ${this.address}`,
-                    fio: this.user.name
+                    address: this.address,
+                    method: this.deliveryMode
                 };
-                tg.sendData(JSON.stringify(orderData));
+                tg.sendData(JSON.stringify(data));
             }
         },
         mounted() {
-    tg.ready();
-    // Не разворачиваем приложение, пока оно полностью не отрисовалось
-    setTimeout(() => {
-        tg.expand();
-    }, 500);
-
-    // Подгружаем данные пользователя порционно
-    if (tg.initDataUnsafe?.user) {
-        this.user.name = tg.initDataUnsafe.user.first_name;
-        // Фото загружаем асинхронно
-        const img = new Image();
-        img.src = tg.initDataUnsafe.user.photo_url || this.user.photo;
-        img.onload = () => { this.user.photo = img.src; };
-    }
-}
+            tg.ready();
+            tg.expand();
+            if (tg.initDataUnsafe?.user) {
+                this.user.name = tg.initDataUnsafe.user.first_name;
+                this.user.photo = tg.initDataUnsafe.user.photo_url || this.user.photo;
+            }
+        }
     }).mount('#app');
 </script>
 </body>
