@@ -263,7 +263,7 @@
 
     // 2. Формируем объект данных ТАК, как их ждет Python-бот
     const orderData = {
-        order_id: orderId,        // Раньше у тебя было 'id', поэтому бот ломался
+        order_id: orderNum,        // Раньше у тебя было 'id', поэтому бот ломался
         user: {
             name: this.form.name,
             phone: this.form.phone
