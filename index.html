@@ -283,13 +283,21 @@
             }
         },
         mounted() {
-            tg.ready();
-            tg.expand();
-            if (tg.initDataUnsafe?.user) {
-                this.user.name = tg.initDataUnsafe.user.first_name;
-                this.user.photo = tg.initDataUnsafe.user.photo_url || this.user.photo;
-            }
-        }
+    tg.ready();
+    // Не разворачиваем приложение, пока оно полностью не отрисовалось
+    setTimeout(() => {
+        tg.expand();
+    }, 500);
+
+    // Подгружаем данные пользователя порционно
+    if (tg.initDataUnsafe?.user) {
+        this.user.name = tg.initDataUnsafe.user.first_name;
+        // Фото загружаем асинхронно
+        const img = new Image();
+        img.src = tg.initDataUnsafe.user.photo_url || this.user.photo;
+        img.onload = () => { this.user.photo = img.src; };
+    }
+}
     }).mount('#app');
 </script>
 </body>
