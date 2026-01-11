@@ -255,15 +255,19 @@
             send() {
     this.vibrate();
 
-    // 1. Генерируем номер заказа (Дата + 5 цифр)
+    // 1. Генерируем номер заказа: Дата (ДДММГГ) + 5 случайных цифр
     const now = new Date();
-    const datePart = now.toLocaleDateString('ru-RU').replace(/\./g, '');
-    const randomPart = Math.floor(10000 + Math.random() * 89999);
-    const orderNum = `${datePart}-${randomPart}`;
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const year = String(now.getFullYear()).slice(-2);
+    const datePart = `${day}${month}${year}`; // Получится например 110126
+    
+    const randomPart = Math.floor(10000 + Math.random() * 89999); // 5 случайных цифр
+    const orderNum = `${datePart}-${randomPart}`; // Итог: 110126-54321
 
-    // 2. Формируем объект данных ТАК, как их ждет Python-бот
+    // 2. Формируем объект данных для бота
     const orderData = {
-        order_id: orderNum,        // Раньше у тебя было 'id', поэтому бот ломался
+        order_id: orderNum, // Отправляем созданный номер
         user: {
             name: this.form.name,
             phone: this.form.phone
@@ -274,17 +278,16 @@
         delivery: this.deliv || "Не выбран"
     };
 
-    // 3. Отправляем данные боту
+    // 3. Отправка данных боту
     tg.sendData(JSON.stringify(orderData));
 
-    // 4. Очищаем корзину, чтобы при следующем входе она была пустой
+    // 4. Очистка и закрытие (Local Store)
     localStorage.removeItem('sv_cart');
     this.cart = [];
-
-    // 5. Закрываем приложение через небольшую паузу, чтобы данные успели уйти
+    
     setTimeout(() => {
         tg.close();
-    }, 100);
+    }, 150);
 }
         },
         mounted() {
