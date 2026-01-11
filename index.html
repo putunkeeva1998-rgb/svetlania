@@ -1,1 +1,245 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SVETLANIA</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://maps.api.2gis.ru/2.0/loader.js?pkg=full"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Ruslan+Display&display=swap" rel="stylesheet">
+    <style>
+        :root { --gold: #D4AF37; --dark-gold: #996515; }
+        body { background-color: #fffaf0; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .old-russian { font-family: 'Ruslan Display', cursive; color: var(--gold); }
+        .gold-border { border: 1px solid var(--gold); }
+        .gold-bg { background-color: var(--gold); }
+        .active-tab { color: var(--gold); border-top: 2px solid var(--gold); }
+        .size-btn.active { background-color: var(--gold); color: white; border-color: var(--gold); }
+        #map { width: 100%; height: 250px; border-radius: 12px; margin-top: 10px; display: none; }
+    </style>
+</head>
+<body>
+<div id="app" class="pb-24">
+    <header class="text-center py-4 bg-white shadow-sm sticky top-0 z-50">
+        <h1 class="old-russian text-3xl">SVETLANIA</h1>
+    </header>
 
+    <div v-if="activeTab === 'catalog'" class="p-4">
+        <div class="flex gap-2 mb-6 overflow-x-auto pb-2">
+            <button @click="vibrate(); currentCategory = 'халаты'" 
+                    :class="['px-6 py-2 rounded-full border gold-border transition', currentCategory === 'халаты' ? 'gold-bg text-white' : 'text-gold']">
+                Халаты
+            </button>
+            <button @click="vibrate(); currentCategory = 'сорочки'" 
+                    :class="['px-6 py-2 rounded-full border gold-border transition', currentCategory === 'сорочки' ? 'gold-bg text-white' : 'text-gold']">
+                Сорочки
+            </button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div v-for="product in filteredProducts" :key="product.id" class="bg-white rounded-xl shadow-sm overflow-hidden relative">
+                <button @click="vibrate(); toggleFavorite(product)" class="absolute top-2 right-2 z-10 p-2 bg-white/80 rounded-full">
+                    <span :class="isFavorite(product) ? 'text-red-500' : 'text-gray-400'">❤</span>
+                </button>
+                <div @click="openProduct(product)" class="aspect-[3/4] bg-gray-200 flex items-center justify-center text-gray-400">
+                    Фото товара
+                </div>
+                <div class="p-2" @click="openProduct(product)">
+                    <h3 class="text-sm font-medium truncate">{{ product.name }}</h3>
+                    <p class="text-gold font-bold">{{ product.price }} ₽</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div v-if="activeTab === 'favorites'" class="p-4">
+        <h2 class="text-xl font-bold mb-4">Избранное</h2>
+        <div v-if="favorites.length === 0" class="text-center text-gray-500 mt-20">Здесь пока пусто</div>
+        <div v-for="item in favorites" class="flex gap-4 bg-white p-3 rounded-xl mb-3 shadow-sm">
+            <div class="w-20 h-24 bg-gray-200 rounded"></div>
+            <div>
+                <h3 class="font-medium">{{ item.name }}</h3>
+                <p class="text-gold">{{ item.price }} ₽</p>
+                <button @click="vibrate(); removeFromFavorites(item.id)" class="text-red-400 text-sm mt-2">Удалить</button>
+            </div>
+        </div>
+    </div>
+
+    <div v-if="activeTab === 'cart'" class="p-4">
+        <h2 class="text-xl font-bold mb-4">Корзина</h2>
+        <div v-for="item in cart" class="flex gap-4 bg-white p-3 rounded-xl mb-3 shadow-sm">
+            <div class="w-20 h-24 bg-gray-200 rounded"></div>
+            <div class="flex-1">
+                <div class="flex justify-between">
+                    <h3 class="font-medium">{{ item.name }}</h3>
+                    <button @click="vibrate(); removeFromCart(item.id)">✕</button>
+                </div>
+                <p class="text-gray-500 text-sm">Размер: {{ item.selectedSize }}</p>
+                <p class="text-gold font-bold">{{ item.price }} ₽</p>
+            </div>
+        </div>
+
+        <div v-if="cart.length > 0" class="mt-6">
+            <h3 class="font-bold mb-2">Способ доставки</h3>
+            <div class="grid grid-cols-3 gap-2 mb-4">
+                <button v-for="m in ['5post', 'СДЭК', 'Почта']" @click="selectDelivery(m)" 
+                        :class="['py-2 text-xs rounded border gold-border', deliveryMode === m ? 'gold-bg text-white' : '']">
+                    {{m}}
+                </button>
+            </div>
+            
+            <div v-if="deliveryMode" class="bg-white p-4 rounded-xl border gold-border">
+                <p class="text-sm font-bold mb-2">Адрес получения:</p>
+                <p class="text-sm text-gray-600 mb-2">{{ address || 'Нажмите на карту для выбора' }}</p>
+                <div id="map"></div>
+            </div>
+
+            <button @click="sendOrder" class="w-full gold-bg text-white py-4 rounded-xl mt-6 font-bold shadow-lg">
+                ОФОРМИТЬ РАСЧЕТ: {{ totalCart }} ₽
+            </button>
+        </div>
+    </div>
+
+    <div v-if="activeTab === 'profile'" class="p-4 text-center">
+        <img :src="user.photo" class="w-24 h-24 rounded-full mx-auto border-4 border-gold shadow-md">
+        <h2 class="text-xl font-bold mt-4">{{ user.name }}</h2>
+        
+        <div class="mt-8 text-left">
+            <h3 class="font-bold mb-2">История заказов</h3>
+            <div class="bg-white p-4 rounded-xl shadow-sm text-sm text-gray-500">
+                Заказов пока нет
+            </div>
+        </div>
+
+        <a href="https://t.me/ВАШ_НИК" @click="vibrate" class="block w-full mt-10 p-4 border gold-border text-gold rounded-xl font-bold">
+            Написать в поддержку
+        </a>
+    </div>
+
+    <div v-if="selectedProduct" class="fixed inset-0 z-[100] bg-white overflow-y-auto p-4">
+        <button @click="selectedProduct = null" class="absolute top-4 left-4 text-2xl">✕</button>
+        <div class="w-full h-80 bg-gray-200 rounded-3xl mt-10 flex items-center justify-center text-gray-400">Фото</div>
+        <h2 class="text-2xl font-bold mt-6">{{ selectedProduct.name }}</h2>
+        <p class="text-gold text-xl font-bold">{{ selectedProduct.price }} ₽</p>
+        
+        <div class="mt-6">
+            <p class="font-bold mb-2">Выберите размер:</p>
+            <div class="flex gap-2">
+                <button v-for="s in selectedProduct.sizes" @click="tempSize = s"
+                        :class="['size-btn w-12 h-12 rounded-xl border gold-border', tempSize === s ? 'active' : '']">
+                    {{ s }}
+                </button>
+            </div>
+        </div>
+
+        <p class="mt-6 text-gray-600 leading-relaxed">{{ selectedProduct.desc }}</p>
+
+        <button @click="addToCart" class="w-full gold-bg text-white py-4 rounded-xl mt-10 font-bold mb-10">
+            ДОБАВИТЬ В КОРЗИНУ
+        </button>
+    </div>
+
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around py-3 z-50 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
+        <button v-for="(btn, key) in navButtons" @click="setTab(key)" :class="['flex flex-col items-center gap-1', activeTab === key ? 'text-gold' : 'text-gray-400']">
+            <span class="text-xl">{{ btn.icon }}</span>
+            <span class="text-[10px] uppercase font-bold">{{ btn.label }}</span>
+        </button>
+    </nav>
+</div>
+
+<script>
+    const { createApp } = Vue;
+    const tg = window.Telegram.WebApp;
+
+    createApp({
+        data() {
+            return {
+                activeTab: 'catalog',
+                currentCategory: 'халаты',
+                selectedProduct: null,
+                tempSize: null,
+                deliveryMode: null,
+                address: '',
+                map: null,
+                user: { name: 'Гость', photo: 'https://via.placeholder.com/150' },
+                products: [
+                    { id: 1, category: 'халаты', name: 'Золотой шелк', price: 4500, sizes: ['S', 'M', 'L'], desc: 'Древнерусский узор на премиальном шелке.' },
+                    { id: 2, category: 'халаты', name: 'Белый лебедь', price: 5200, sizes: ['M', 'L', 'XL'], desc: 'Мягкий хлопок с вышивкой.' },
+                    { id: 3, category: 'сорочки', name: 'Утренняя роса', price: 2800, sizes: ['XS', 'S', 'M'], desc: 'Легкая сорочка для нежного сна.' },
+                    { id: 4, category: 'сорочки', name: 'Вечерняя заря', price: 3100, sizes: ['S', 'M'], desc: 'Элегантное кружево и атлас.' }
+                ],
+                favorites: [],
+                cart: [],
+                navButtons: {
+                    catalog: { label: 'Каталог', icon: '🏛' },
+                    favorites: { label: 'Избранное', icon: '❤' },
+                    cart: { label: 'Корзина', icon: '🛒' },
+                    profile: { label: 'Профиль', icon: '👤' }
+                }
+            }
+        },
+        computed: {
+            filteredProducts() { return this.products.filter(p => p.category === this.currentCategory) },
+            totalCart() { return this.cart.reduce((sum, item) => sum + item.price, 0) }
+        },
+        methods: {
+            vibrate() { if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium'); },
+            setTab(tab) { this.vibrate(); this.activeTab = tab; },
+            openProduct(p) { this.vibrate(); this.selectedProduct = p; this.tempSize = p.sizes[0]; },
+            isFavorite(p) { return this.favorites.some(f => f.id === p.id) },
+            toggleFavorite(p) {
+                const idx = this.favorites.findIndex(f => f.id === p.id);
+                if (idx > -1) this.favorites.splice(idx, 1);
+                else this.favorites.push({...p, size: this.tempSize || p.sizes[0]});
+            },
+            addToCart() {
+                this.vibrate();
+                this.cart.push({ ...this.selectedProduct, selectedSize: this.tempSize });
+                this.selectedProduct = null;
+                tg.MainButton.setText("ПЕРЕЙТИ В КОРЗИНУ").show().onClick(() => this.activeTab = 'cart');
+            },
+            selectDelivery(mode) {
+                this.vibrate();
+                this.deliveryMode = mode;
+                document.getElementById('map').style.display = 'block';
+                this.initMap();
+            },
+            initMap() {
+                if (this.map) return;
+                dg.loader.init(() => {
+                    this.map = new dg.Map('map', { center: [55.75, 37.61], zoom: 11 });
+                    this.map.on('click', (e) => {
+                        const { lat, lng } = e.latlng;
+                        fetch(`https://catalog.api.2gis.com/3.0/items/geocode?lat=${lat}&lon=${lng}&fields=items.address&key=cab82c94-e619-42eb-9814-3361712feaf0`)
+                        .then(r => r.json())
+                        .then(data => {
+                            const res = data.result.items[0];
+                            this.address = res.address_name || res.full_name;
+                        });
+                    });
+                });
+            },
+            sendOrder() {
+                const orderData = {
+                    items: this.cart,
+                    total: this.totalCart,
+                    address: this.address,
+                    fio: this.user.name
+                };
+                tg.sendData(JSON.stringify(orderData));
+            }
+        },
+        mounted() {
+            tg.ready();
+            tg.expand();
+            if (tg.initDataUnsafe?.user) {
+                this.user.name = tg.initDataUnsafe.user.first_name;
+                this.user.photo = tg.initDataUnsafe.user.photo_url || this.user.photo;
+            }
+        }
+    }).mount('#app');
+</script>
+</body>
+</html>
