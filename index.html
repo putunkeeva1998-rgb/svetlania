@@ -83,10 +83,15 @@
                         <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                     </button>
                     <div class="slider-wrapper" @click="openP(p)">
-                        <div class="slider-inner" @scroll="e => handleScroll(e, p)">
-                            <img v-for="img in p.images" :src="img">
-                        </div>
-                    </div>
+    <div class="slider-inner" @scroll="e => handleScroll(e, p)">
+        <img v-for="img in p.images" :src="img">
+    </div>
+    <div class="dots" style="position: absolute; bottom: 10px; width: 100%; text-align: center;">
+        <span v-for="(img, idx) in p.images" 
+              :style="{ display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', background: idx === p.aIdx ? 'white' : 'rgba(255,255,255,0.5)', margin: '0 3px' }">
+        </span>
+    </div>
+</div>
                     <div class="card-info">
                         <div class="card-title">{{p.name}}</div>
                         <div class="card-price">{{p.price}} ₽</div>
@@ -157,10 +162,15 @@
     <div v-if="selP" class="modal">
         <button class="close-m" @click="selP = null">✕</button>
         <div class="slider-wrapper" style="aspect-ratio: 1/1.3;">
-            <div class="slider-inner" @scroll="e => handleScroll(e, selP)">
-                <img v-for="img in selP.images" :src="img">
-            </div>
-        </div>
+    <div class="slider-inner" @scroll="e => handleScroll(e, selP)">
+        <img v-for="img in selP.images" :src="img">
+    </div>
+    <div class="dots" style="position: absolute; bottom: 10px; width: 100%; text-align: center;">
+        <span v-for="(img, idx) in selP.images" 
+              :style="{ display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', background: idx === selP.aIdx ? 'white' : 'rgba(255,255,255,0.5)', margin: '0 3px' }">
+        </span>
+    </div>
+</div>
         <div style="padding: 20px;">
             <h2 class="old-russian">{{selP.name}}</h2>
             <div style="font-size: 24px; color: var(--gold); font-weight: 800; margin: 10px 0;">{{selP.price}} ₽</div>
@@ -207,7 +217,7 @@
                     { id: 1, category: 'халаты', name: 'Халат "Кимоно белое с кружевами"', price: 1500, images: ['111white.jpg'], sizes: ['S','M','L'], selS: 'S', aIdx: 0, desc: 'Материал сохраняет форму и цвет даже после многократных стирок, не линяет и не растягивается.Гладить на низкой температуре; стирка при t не более 30°C.' },
                     { id: 2, category: 'халаты', name: 'Халат "Кимоно бордовое с кружевами"', price: 1500, images: ['111red.jpg'], sizes: ['M','L'], selS: 'M', aIdx: 0, desc: 'Материал сохраняет форму и цвет даже после многократных стирок, не линяет и не растягивается.Гладить на низкой температуре; стирка при t не более 30°C.' },
                     { id: 3, category: 'халаты', name: 'Халат "Кимоно черное с кружевами"', price: 1500, images: ['111black.jpg'], sizes: ['S','M','L'], selS: 'S', aIdx: 0, desc: 'Материал сохраняет форму и цвет даже после многократных стирок, не линяет и не растягивается.Гладить на низкой температуре; стирка при t не более 30°C.' },
-                    { id: 4, category: 'сорочки', name: 'Сорочка "Сорочка с халатом черная"', price: 1200, images: ['s111black.jpg'], sizes: ['S','M'], selS: 'S', aIdx: 0, desc: 'Сорочка на бретельках регулируется по длине. Халат - кимоно длиной выше колена и рукавом 3\4.' }
+                    { id: 4, category: 'сорочки', name: 'Сорочка "Сорочка с халатом черная"', price: 1200, images: ['s111black.jpg','s111black2.jpg'], sizes: ['S','M'], selS: 'S', aIdx: 0, desc: 'Сорочка на бретельках регулируется по длине. Халат - кимоно длиной выше колена и рукавом 3\4.' }
                 ],
                 cart: JSON.parse(localStorage.getItem('sv_cart') || '[]'),
                 favs: JSON.parse(localStorage.getItem('sv_favs') || '[]')
