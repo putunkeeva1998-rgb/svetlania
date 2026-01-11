@@ -127,4 +127,105 @@
 
     <nav class="bottom-nav">
         <button @click="activeTab = 'catalog'" :class="['nav-item', activeTab === 'catalog' ? 'active' : '']">🏰 КАТАЛОГ</button>
-        <button @click="activeTab = '
+        <button @click="activeTab = 'favs'" :class="['nav-item', activeTab === 'favs' ? 'active' : '']">❤ ИЗБРАННОЕ</button>
+        <button @click="activeTab = 'cart'" :class="['nav-item', activeTab === 'cart' ? 'active' : '']">🛒 КОРЗИНА</button>
+    </nav>
+</div>
+
+<script>
+    const tg = window.Telegram.WebApp;
+    const { createApp } = Vue;
+
+    createApp({
+        data() {
+            return {
+                activeTab: 'catalog',
+                currentCategory: 'халаты',
+                categories: ['халаты', 'сорочки'],
+                selectedProduct: null,
+                tempSize: 'S',
+                deliveryMode: '',
+                address: '',
+                map: null,
+                marker: null,
+                form: { firstName: '', phone: '' },
+                products: [
+                    { id: 1, category: 'халаты', name: 'Халат "Белое Облако"', price: 4500, image: '111white.jpg', sizes: ['S','M','L'], desc: 'Шелк.' },
+                    { id: 2, category: 'халаты', name: 'Халат "Красная Заря"', price: 5200, image: '111red.jpg', sizes: ['M','L'], desc: 'Атлас.' },
+                    { id: 3, category: 'халаты', name: 'Халат "Полночь"', price: 4800, image: '111black.jpg', sizes: ['S','M','L'], desc: 'Черный.' }
+                ],
+                cart: [],
+                favorites: []
+            }
+        },
+        computed: {
+            filteredProducts() { return this.products.filter(p => p.category === this.currentCategory) },
+            favItems() { return this.products.filter(p => this.favorites.includes(p.id)) },
+            totalSum() { return this.cart.reduce((s, i) => s + i.price, 0) },
+            isFormValid() { return this.form.firstName && this.form.phone && this.address }
+        },
+        methods: {
+            vibrate() { tg.HapticFeedback.impactOccurred('medium'); },
+            toggleFav(p) { this.vibrate(); const idx = this.favorites.indexOf(p.id); idx > -1 ? this.favorites.splice(idx, 1) : this.favorites.push(p.id); },
+            isFav(p) { return this.favorites.includes(p.id); },
+            openProduct(p) { this.vibrate(); this.selectedProduct = p; this.tempSize = p.sizes[0]; },
+            addToCart() { this.vibrate(); this.cart.push({...this.selectedProduct, size: this.tempSize, cartId: Date.now()}); this.selectedProduct = null; },
+            removeFromCart(id) { this.cart = this.cart.filter(i => i.cartId !== id); },
+            
+            setDelivery(m) { 
+                this.vibrate(); 
+                this.deliveryMode = m; 
+                // Даем Vue время отрисовать контейнер #map
+                setTimeout(() => { this.initMap(); }, 100);
+            },
+
+            initMap() {
+                // Если API загружено
+                if (typeof DG !== 'undefined') {
+                    if (this.map) { this.map.remove(); this.map = null; }
+                    
+                    this.map = DG.map('map', {
+                        center: [55.75, 37.61],
+                        zoom: 11,
+                        zoomControl: false,
+                        fullscreenControl: false
+                    });
+
+                    this.map.on('click', (e) => {
+                        this.vibrate();
+                        const {lat, lng} = e.latlng;
+                        if (this.marker) {
+                            this.marker.setLatLng([lat, lng]);
+                        } else {
+                            this.marker = DG.marker([lat, lng]).addTo(this.map);
+                        }
+                        
+                        // Обратное геокодирование через API 2ГИС
+                        fetch(`https://catalog.api.2gis.com/3.0/items/geocode?lat=${lat}&lon=${lng}&fields=items.address&key=cab82c94-e619-42eb-9814-3361712feaf0`)
+                        .then(r => r.json())
+                        .then(d => {
+                            if (d.result && d.result.items.length > 0) {
+                                this.address = d.result.items[0].address_name || d.result.items[0].full_name;
+                            }
+                        });
+                    });
+                } else {
+                    console.error("2GIS SDK не загружен");
+                }
+            },
+
+            sendOrder() {
+                this.vibrate();
+                const data = { user: this.form, cart: this.cart, total: this.totalSum, address: this.address };
+                tg.sendData(JSON.stringify(data));
+                tg.close();
+            }
+        },
+        mounted() {
+            tg.ready();
+            tg.expand();
+        }
+    }).mount('#app');
+</script>
+</body>
+</html>
