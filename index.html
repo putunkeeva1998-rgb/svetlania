@@ -115,6 +115,7 @@
                     <img :src="p.images[0]" style="width:100%; aspect-ratio:3/4; object-fit:cover;" @click="openP(p)">
                     <div class="card-info">
                         <div class="card-price">{{p.price}} ₽</div>
+                        <div style="font-size: 11px; color: var(--gray); margin-bottom: 8px; font-weight: bold;">Размер: {{p.selS}}</div>
                         <button class="buy-btn" @click="addToCart(p)">В корзину</button>
                     </div>
                 </div>
@@ -227,7 +228,13 @@
         },
         computed: {
             filteredProducts() { return this.products.filter(p => p.category === this.currentCat) },
-            favItems() { return this.products.filter(p => this.favs.includes(p.id)) },
+            favItems() { 
+    return this.favs.map(f => {
+        const product = this.products.find(p => p.id === f.id);
+        // Мы берем данные товара и приклеиваем к ним тот размер, который сохранили
+        return product ? { ...product, selS: f.size } : null;
+    }).filter(p => p !== null);
+},
             total() { return this.cart.reduce((s, i) => s + i.price, 0) },
             isValid() { return this.form.name.length > 2 && this.form.phone.length > 10 && this.address && this.cart.length > 0; }
         },
@@ -235,12 +242,20 @@
             vibrate() { tg.HapticFeedback.impactOccurred('medium'); },
             handleScroll(e, p) { p.aIdx = Math.round(e.target.scrollLeft / e.target.offsetWidth); },
             toggleFav(p) {
-                this.vibrate();
-                const i = this.favs.indexOf(p.id);
-                i > -1 ? this.favs.splice(i, 1) : this.favs.push(p.id);
-                localStorage.setItem('sv_favs', JSON.stringify(this.favs));
-            },
-            isFav(p) { return this.favs.includes(p.id); },
+    this.vibrate();
+    // Ищем товар по ID и по выбранному размеру (selS)
+    const idx = this.favs.findIndex(f => f.id === p.id && f.size === p.selS);
+    if (idx > -1) {
+        this.favs.splice(idx, 1);
+    } else {
+        this.favs.push({ id: p.id, size: p.selS });
+    }
+    localStorage.setItem('sv_favs', JSON.stringify(this.favs));
+},
+isFav(p) { 
+    // Проверяем, есть ли в избранном именно эта пара (ID + размер)
+    return this.favs.some(f => f.id === p.id && f.size === p.selS); 
+},
             openP(p) { this.vibrate(); this.selP = p; },
             addToCart(p) {
                 this.vibrate();
